@@ -1,0 +1,1028 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B043C97C-892B-4B04-827D-5CDCFE4555E6}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>SmartColor</RootNamespace>
+    <AssemblyName>SmartColor</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <PreferNativeArm64>true</PreferNativeArm64>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>智慧色彩.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>F801977646B64DC28C66334239DD1CAD56F57255</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>SmartColor_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Messaging" />
+    <Reference Include="System.Speech" />
+    <Reference Include="System.Web.DataVisualization, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Chart.Controls.4.7.2046\lib\net35\System.Web.DataVisualization.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.DataVisualization.Design, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Chart.Controls.4.7.2046\lib\net35\System.Web.DataVisualization.Design.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms.DataVisualization, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Chart.Controls.4.7.2046\lib\net35\System.Windows.Forms.DataVisualization.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms.DataVisualization.Design, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Chart.Controls.4.7.2046\lib\net35\System.Windows.Forms.DataVisualization.Design.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="zxing, Version=1.0.4727.18517, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.2.1.1\lib\net20\zxing.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="My_ADT8940A1\ADT8940A1_SemiAutoHelper.cs" />
+    <Compile Include="My_AutomaticModule\BottleAddWaterDebug.cs" />
+    <Compile Include="My_AutomaticModule\BottleABSRobotTask.cs" />
+    <Compile Include="My_AutomaticModule\BottleCorrectionRobotTask.cs" />
+    <Compile Include="My_AutomaticModule\BottleSelfRobotTask.cs" />
+    <Compile Include="My_AutomaticModule\MechanicalReset.cs" />
+    <Compile Include="My_AutomaticModule\WashSyringeRobotTask.cs" />
+    <Compile Include="My_AutomaticModule\CupRobotTask.cs" />
+    <Compile Include="My_AutomaticModule\DMFCorrectionRobotTask.cs" />
+    <Compile Include="My_AutomaticModule\DropBatchManager.cs" />
+    <Compile Include="My_AutomaticModule\DropRobotTask.cs" />
+    <Compile Include="My_AutomaticModule\WaterCorrectionRobotTask.cs" />
+    <Compile Include="My_ConPar\Area\Layout_4.cs" />
+    <Compile Include="My_ConPar\Correction.cs" />
+    <Compile Include="My_ConPar\WashCup.cs" />
+    <Compile Include="My_Control\CtDoubleBufferedFlowLayoutPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtDoubleBufferedFlowLayoutPanel.Designer.cs">
+      <DependentUpon>CtDoubleBufferedFlowLayoutPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\Ctlayout_4.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\Ctlayout_4.Designer.cs">
+      <DependentUpon>Ctlayout_4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtTask.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtTask.Designer.cs">
+      <DependentUpon>CtTask.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtTaskQueuePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtTaskQueuePanel.Designer.cs">
+      <DependentUpon>CtTaskQueuePanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Cup\FC_4.cs" />
+    <Compile Include="My_Cup\ICylinderComm.cs" />
+    <Compile Include="My_Cup\SignalEdgeHandler.cs" />
+    <Compile Include="My_CuttingMachine\DELTA_RTU.cs" />
+    <Compile Include="My_CuttingMachine\Inovance_TCP.cs" />
+    <Compile Include="My_ConPar\Choices.cs" />
+    <Compile Include="My_ConPar\Hardware.cs" />
+    <Compile Include="My_ConPar\Type\BaseMotion.cs" />
+    <Compile Include="My_ConPar\Type\PLC\Motion.cs" />
+    <Compile Include="My_File\CupTempRecorder.cs" />
+    <Compile Include="My_Cup\FC_12.cs" />
+    <Compile Include="My_Cup\FC_6.cs" />
+    <Compile Include="My_Form\Correction\WashSyringe.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Correction\WashSyringe.Designer.cs">
+      <DependentUpon>WashSyringe.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Correction\BottleAddWater.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Correction\BottleAddWater.Designer.cs">
+      <DependentUpon>BottleAddWater.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Correction\BottleABS.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Correction\BottleABS.Designer.cs">
+      <DependentUpon>BottleABS.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Correction\BottleSelf.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Correction\BottleSelf.Designer.cs">
+      <DependentUpon>BottleSelf.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Correction\BottleCorrection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Correction\BottleCorrection.Designer.cs">
+      <DependentUpon>BottleCorrection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Correction\DMFCorrection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Correction\DMFCorrection.Designer.cs">
+      <DependentUpon>DMFCorrection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Correction\WaterCorrection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Correction\WaterCorrection.Designer.cs">
+      <DependentUpon>WaterCorrection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\MachineDebugging\LidLayout.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\MachineDebugging\LidLayout.Designer.cs">
+      <DependentUpon>LidLayout.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Interaction\ProtocolItem.cs" />
+    <Compile Include="My_CuttingMachine\WEINVIEW_RTU.cs" />
+    <Compile Include="My_CuttingMachine\WEINVIEW_TCP.cs" />
+    <Compile Include="My_ConPar\Order\BigProcess.cs" />
+    <Compile Include="My_ConPar\Order\BrewProcess\BrewProcess.cs" />
+    <Compile Include="My_ConPar\Order\DropProcess\DropProcess.cs" />
+    <Compile Include="My_ConPar\Order\DyeingProcess\DyeingProcess.cs" />
+    <Compile Include="My_ConPar\Order\PostProcess\PostProcess.cs" />
+    <Compile Include="My_ConPar\Order\UVProcess\UVProcess.cs" />
+    <Compile Include="My_Control\CtBatchData.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtBatchData.Designer.cs">
+      <DependentUpon>CtBatchData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtDHDataGridView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtDHDataGridView.Designer.cs">
+      <DependentUpon>CtDHDataGridView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtDropDetail.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtDropDetail.Designer.cs">
+      <DependentUpon>CtDropDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtDropHead.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtDropHead.Designer.cs">
+      <DependentUpon>CtDropHead.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtHistoryDyeBrowse.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtHistoryDyeBrowse.Designer.cs">
+      <DependentUpon>CtHistoryDyeBrowse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtDropRecord.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtDropRecord.Designer.cs">
+      <DependentUpon>CtDropRecord.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtDyeing.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtDyeing.Designer.cs">
+      <DependentUpon>CtDyeing.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtFoldDataGridView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtFoldDataGridView.Designer.cs">
+      <DependentUpon>CtFoldDataGridView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtFormulaBrowse.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtFormulaBrowse.Designer.cs">
+      <DependentUpon>CtFormulaBrowse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtInteractiveStatusStrip.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtInteractiveStatusStrip.Designer.cs">
+      <DependentUpon>CtInteractiveStatusStrip.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtLabColorWheelPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtLabColorWheelPanel.Designer.cs">
+      <DependentUpon>CtLabColorWheelPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtRecord.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtRecord.Designer.cs">
+      <DependentUpon>CtRecord.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtUvCurveChart.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtUvCurveChart.Designer.cs">
+      <DependentUpon>CtUvCurveChart.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtModuleDragPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtModuleDragPanel.Designer.cs">
+      <DependentUpon>CtModuleDragPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_DataBase\TableDefinition.cs" />
+    <Compile Include="My_Form\BasicData\Note.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\BasicData\Note.Designer.cs">
+      <DependentUpon>Note.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\BasicData\UVMeasurement.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\BasicData\UVMeasurement.Designer.cs">
+      <DependentUpon>UVMeasurement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\ConPar\OrderInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\ConPar\OrderInfo.Designer.cs">
+      <DependentUpon>OrderInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\DyeingMan\CupChange.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\DyeingMan\CupChange.Designer.cs">
+      <DependentUpon>CupChange.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\DyeingMan\DyeingMan.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\DyeingMan\DyeingMan.Designer.cs">
+      <DependentUpon>DyeingMan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\DyeingMan\NewDyeCode.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\DyeingMan\NewDyeCode.Designer.cs">
+      <DependentUpon>NewDyeCode.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\DyeingMan\Preview.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\DyeingMan\Preview.Designer.cs">
+      <DependentUpon>Preview.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Help\Abort.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Help\Abort.Designer.cs">
+      <DependentUpon>Abort.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Help\Register.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Help\Register.Designer.cs">
+      <DependentUpon>Register.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\MachineDebugging\UVDebug.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\MachineDebugging\UVDebug.Designer.cs">
+      <DependentUpon>UVDebug.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Main\ToastForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Main\ToastForm.Designer.cs">
+      <DependentUpon>ToastForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_PLC\PLC_ActionCheckParam.cs" />
+    <Compile Include="My_PLC\PLC_AddPowderParam.cs" />
+    <Compile Include="My_PLC\PLC_AddSolventParam.cs" />
+    <Compile Include="My_PLC\PLC_AddWaterParam.cs" />
+    <Compile Include="My_RobotManager\My_RobotManager.cs" />
+    <Compile Include="My_Tool\BottleAuxiliary.cs" />
+    <Compile Include="My_Tool\RobotAlarmOverview.cs" />
+    <Compile Include="My_PLC\PLC_AspirateParam.cs" />
+    <Compile Include="My_PLC\PLC_BalanceCheckParam.cs" />
+    <Compile Include="My_PLC\PLC_BeforeAddPowderBlockParam.cs" />
+    <Compile Include="My_PLC\PLC_CloseLidParam.cs" />
+    <Compile Include="My_PLC\PLC_ConPar.cs" />
+    <Compile Include="My_PLC\PLC_DecompressParam.cs" />
+    <Compile Include="My_PLC\PLC_DispenseParam.cs" />
+    <Compile Include="My_PLC\PLC_HomeParam.cs" />
+    <Compile Include="My_PLC\PLC_InPut.cs" />
+    <Compile Include="My_PLC\PLC_MoveToPositionParam.cs" />
+    <Compile Include="My_PLC\PLC_OpenLidParam.cs" />
+    <Compile Include="My_PLC\PLC_OutPut.cs" />
+    <Compile Include="My_PLC\PLC_PHAspirateParam.cs" />
+    <Compile Include="My_PLC\PLC_PHDrainParam.cs" />
+    <Compile Include="My_PLC\PLC_PutDryClothParam.cs" />
+    <Compile Include="My_PLC\PLC_PutLidParam.cs" />
+    <Compile Include="My_PLC\PLC_PutMotherBottleParam.cs" />
+    <Compile Include="My_PLC\PLC_PutWetClothParam.cs" />
+    <Compile Include="My_PLC\PLC_ReadTask.cs" />
+    <Compile Include="My_PLC\PLC_Receive.cs" />
+    <Compile Include="My_PLC\PLC_RelativeMoveParam.cs" />
+    <Compile Include="My_PLC\PLC_ReleaseNeedleParam.cs" />
+    <Compile Include="My_PLC\PLC_ResetParam.cs" />
+    <Compile Include="My_PLC\PLC_RobotArmReleaseParam.cs" />
+    <Compile Include="My_PLC\PLC_RobotHandGraspingParam.cs" />
+    <Compile Include="My_PLC\PLC_SemiAutoHelper.cs" />
+    <Compile Include="My_PLC\PLC_SemiAutoParamBase.cs" />
+    <Compile Include="My_PLC\PLC_SupportCoverParam.cs" />
+    <Compile Include="My_PLC\PLC_TakeDryClothParam.cs" />
+    <Compile Include="My_PLC\PLC_TakeLidParam.cs" />
+    <Compile Include="My_PLC\PLC_TakeMotherBottleParam.cs" />
+    <Compile Include="My_PLC\PLC_TakeWetClothParam.cs" />
+    <Compile Include="My_PLC\PLC_UVAspirateParam.cs" />
+    <Compile Include="My_PLC\PLC_WashSyringeParam.cs" />
+    <Compile Include="My_RobotManager\RobotBusinessTask.cs" />
+    <Compile Include="My_RobotManager\RobotTaskManager.cs" />
+    <Compile Include="My_SemiAutoModule\ADT8940A1SemiAutoHelperAdapter.cs" />
+    <Compile Include="My_SemiAutoModule\ISemiAutoHelper.cs" />
+    <Compile Include="My_SemiAutoModule\PLCSemiAutoHelperAdapter.cs" />
+    <Compile Include="My_SemiAutoModule\SemiAutoHelperFactory.cs" />
+    <Compile Include="My_Tool\BalanceStableReading.cs" />
+    <Compile Include="My_Tool\Base64.cs" />
+    <Compile Include="My_Form\HistoricalData\Brew.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\HistoricalData\Brew.Designer.cs">
+      <DependentUpon>Brew.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\HistoricalData\Rectification.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\HistoricalData\Rectification.Designer.cs">
+      <DependentUpon>Rectification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\HistoricalData\Self.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\HistoricalData\Self.Designer.cs">
+      <DependentUpon>Self.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\HistoricalData\UV.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\HistoricalData\UV.Designer.cs">
+      <DependentUpon>UV.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\MachineDebugging\Alarm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\MachineDebugging\Alarm.Designer.cs">
+      <DependentUpon>Alarm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\MachineDebugging\Debug.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\MachineDebugging\Debug.Designer.cs">
+      <DependentUpon>Debug.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\MachineDebugging\Run.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\MachineDebugging\Run.Designer.cs">
+      <DependentUpon>Run.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\UVMan\UVMan.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\UVMan\UVMan.Designer.cs">
+      <DependentUpon>UVMan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Tool\AlarmTableMan.cs" />
+    <Compile Include="My_Tool\BatchNoHelper.cs" />
+    <Compile Include="My_Tool\ColorCalculation.cs" />
+    <Compile Include="My_Tool\CoordinateCalculator.cs" />
+    <Compile Include="My_AutomaticModule\CupCommManager.cs" />
+    <Compile Include="My_Tool\CupAuxiliary.cs" />
+    <Compile Include="My_Tool\FindDyeingCode.cs" />
+    <Compile Include="My_Tool\HistoryBackupHelper.cs" />
+    <Compile Include="My_ADT8940A1\Cadt8940a1m.cs" />
+    <Compile Include="My_ADT8940A1\Card.cs" />
+    <Compile Include="My_ConPar\AbortInfo.cs" />
+    <Compile Include="My_ConPar\Area\Balance\Balance.cs" />
+    <Compile Include="My_ConPar\Area\Base.cs" />
+    <Compile Include="My_ConPar\Area\BottleArea\Bottle.cs" />
+    <Compile Include="My_ConPar\Area\Clip\DryCloth.cs" />
+    <Compile Include="My_ConPar\Area\Clip\WetCloth.cs" />
+    <Compile Include="My_ConPar\Area\Drop\Drop.cs" />
+    <Compile Include="My_ConPar\Area\FlipCylinder\FC_12.cs" />
+    <Compile Include="My_ConPar\Area\FlipCylinder\FC_16.cs" />
+    <Compile Include="My_ConPar\Area\FlipCylinder\FC_4.cs" />
+    <Compile Include="My_ConPar\Area\FlipCylinder\FC_6.cs" />
+    <Compile Include="My_ConPar\Area\Needles\Needles.cs" />
+    <Compile Include="My_ConPar\Area\OutClothArea\OutClothArea.cs" />
+    <Compile Include="My_ConPar\Area\PrepareClothArea\PrepareClothArea.cs" />
+    <Compile Include="My_ConPar\Area\RotorCylinder\RC_10.cs" />
+    <Compile Include="My_ConPar\Area\RotorCylinder\RC_4.cs" />
+    <Compile Include="My_ConPar\Area\Layout_1.cs" />
+    <Compile Include="My_ConPar\Area\Layout_2.cs" />
+    <Compile Include="My_ConPar\Area\Layout_3.cs" />
+    <Compile Include="My_ConPar\Area\Wash\Wash.cs" />
+    <Compile Include="My_ConPar\CuttingMachine\DELTA_RTU.cs" />
+    <Compile Include="My_ConPar\CuttingMachine\Inovance_TCP.cs" />
+    <Compile Include="My_ConPar\CuttingMachine\WEINVIEW_RTU.cs" />
+    <Compile Include="My_ConPar\CuttingMachine\WEINVIEW_TCP.cs" />
+    <Compile Include="My_ConPar\ERPInteraction\Database.cs" />
+    <Compile Include="My_ConPar\PowderMachine\Powder.cs" />
+    <Compile Include="My_ConPar\Type\BaseIO.cs" />
+    <Compile Include="My_ConPar\Object.cs" />
+    <Compile Include="My_ConPar\Type\BoaedCard\IO.cs" />
+    <Compile Include="My_ConPar\Type\PLC\IO.cs" />
+    <Compile Include="My_ConPar\WeighingMachine\Weighing.cs" />
+    <Compile Include="My_Control\CtBalance.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtBalance.Designer.cs">
+      <DependentUpon>CtBalance.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtBottle.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtBottle.Designer.cs">
+      <DependentUpon>CtBottle.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtTemperatureChart.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtTemperatureChart.Designer.cs">
+      <DependentUpon>CtTemperatureChart.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtClip.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtClip.Designer.cs">
+      <DependentUpon>CtClip.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtCup.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtCup.Designer.cs">
+      <DependentUpon>CtCup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtBottleArea.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtBottleArea.Designer.cs">
+      <DependentUpon>CtBottleArea.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtCupArea.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtCupArea.Designer.cs">
+      <DependentUpon>CtCupArea.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtDataGridView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtDataGridView.Designer.cs">
+      <DependentUpon>CtDataGridView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\Ctlayout_3.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\Ctlayout_3.Designer.cs">
+      <DependentUpon>Ctlayout_3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\Ctlayout_2.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\Ctlayout_2.Designer.cs">
+      <DependentUpon>Ctlayout_2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\Ctlayout_1.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\Ctlayout_1.Designer.cs">
+      <DependentUpon>Ctlayout_1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtNeedles.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtNeedles.Designer.cs">
+      <DependentUpon>CtNeedles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtOutCloth.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtOutCloth.Designer.cs">
+      <DependentUpon>CtOutCloth.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtOutClothArea.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtOutClothArea.Designer.cs">
+      <DependentUpon>CtOutClothArea.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtPrepareCloth.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtPrepareCloth.Designer.cs">
+      <DependentUpon>CtPrepareCloth.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtPrepareClothArea.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtPrepareClothArea.Designer.cs">
+      <DependentUpon>CtPrepareClothArea.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Control\CtWash.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtWash.Designer.cs">
+      <DependentUpon>CtWash.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Interface\ICustomUpdatable.cs" />
+    <Compile Include="My_File\LocalTranslator.cs" />
+    <Compile Include="My_File\ConfigHelper.cs" />
+    <Compile Include="My_ConPar\Database.cs" />
+    <Compile Include="My_ConPar\Delay.cs" />
+    <Compile Include="My_ConPar\Machine.cs" />
+    <Compile Include="My_ConPar\Type\BoaedCard\Motion.cs" />
+    <Compile Include="My_ConPar\Other.cs" />
+    <Compile Include="My_ConPar\ERPInteraction\Txt.cs" />
+    <Compile Include="My_Control\CtTab.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="My_DataBase\SqlServer.cs" />
+    <Compile Include="My_File\Logger.cs" />
+    <Compile Include="My_Form\BasicData\Assistant.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\BasicData\Assistant.Designer.cs">
+      <DependentUpon>Assistant.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\BasicData\Bottle.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\BasicData\Bottle.Designer.cs">
+      <DependentUpon>Bottle.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\BasicData\BrewingProcess.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\BasicData\BrewingProcess.Designer.cs">
+      <DependentUpon>BrewingProcess.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\BasicData\DPPConfiguration.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\BasicData\DPPConfiguration.Designer.cs">
+      <DependentUpon>DPPConfiguration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\BasicData\DPConfiguration.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\BasicData\DPConfiguration.Designer.cs">
+      <DependentUpon>DPConfiguration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\BasicData\FormulaGroup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\BasicData\FormulaGroup.Designer.cs">
+      <DependentUpon>FormulaGroup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\BasicData\DyeType.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\BasicData\DyeType.Designer.cs">
+      <DependentUpon>DyeType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\BasicData\Operator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\BasicData\Operator.Designer.cs">
+      <DependentUpon>Operator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\ConPar\ConParShow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\ConPar\ConParShow.Designer.cs">
+      <DependentUpon>ConParShow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\ConPar\AbortInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\ConPar\AbortInfo.Designer.cs">
+      <DependentUpon>AbortInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\HistoricalData\Formulas.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\HistoricalData\Formulas.Designer.cs">
+      <DependentUpon>Formulas.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\HistoricalData\Dyeing.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\HistoricalData\Dyeing.Designer.cs">
+      <DependentUpon>Dyeing.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Homepage\BottleInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Homepage\BottleInfo.Designer.cs">
+      <DependentUpon>BottleInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Homepage\CupInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Homepage\CupInfo.Designer.cs">
+      <DependentUpon>CupInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Homepage\Home.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Homepage\Home.Designer.cs">
+      <DependentUpon>Home.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Login\ChangePassword.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Login\ChangePassword.Designer.cs">
+      <DependentUpon>ChangePassword.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Login\LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Login\LoginForm.Designer.cs">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Main\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Main\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Login\SplashForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Login\SplashForm.Designer.cs">
+      <DependentUpon>SplashForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Interaction\FreeAgreement.cs" />
+    <Compile Include="My_Interaction\ModbusRTU.cs" />
+    <Compile Include="My_Interaction\ModbusTCP.cs" />
+    <Compile Include="My_Interaction\TxtInteraction.cs" />
+    <Compile Include="My_PLC\PLC.cs" />
+    <Compile Include="My_Tool\AES.cs" />
+    <Compile Include="My_Tool\HttpUtil.cs" />
+    <Compile Include="My_Tool\MessageEventManager.cs" />
+    <Compile Include="My_Tool\MyRegister.cs" />
+    <Compile Include="My_Tool\Result.cs" />
+    <Compile Include="My_Tool\RunTableMan.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings.cs" />
+    <EmbeddedResource Include="My_Control\CtBatchData.resx">
+      <DependentUpon>CtBatchData.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtBottle.resx">
+      <DependentUpon>CtBottle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtCup.resx">
+      <DependentUpon>CtCup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtBottleArea.resx">
+      <DependentUpon>CtBottleArea.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtCupArea.resx">
+      <DependentUpon>CtCupArea.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtDropDetail.resx">
+      <DependentUpon>CtDropDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtDropHead.resx">
+      <DependentUpon>CtDropHead.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtHistoryDyeBrowse.resx">
+      <DependentUpon>CtHistoryDyeBrowse.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtDropRecord.resx">
+      <DependentUpon>CtDropRecord.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtDyeing.resx">
+      <DependentUpon>CtDyeing.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtFormulaBrowse.resx">
+      <DependentUpon>CtFormulaBrowse.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\Ctlayout_4.resx">
+      <DependentUpon>Ctlayout_4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\Ctlayout_3.resx">
+      <DependentUpon>Ctlayout_3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\Ctlayout_2.resx">
+      <DependentUpon>Ctlayout_2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\Ctlayout_1.resx">
+      <DependentUpon>Ctlayout_1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtNeedles.resx">
+      <DependentUpon>CtNeedles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtOutCloth.resx">
+      <DependentUpon>CtOutCloth.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtOutClothArea.resx">
+      <DependentUpon>CtOutClothArea.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtPrepareCloth.resx">
+      <DependentUpon>CtPrepareCloth.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtRecord.resx">
+      <DependentUpon>CtRecord.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtTask.resx">
+      <DependentUpon>CtTask.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtTaskQueuePanel.resx">
+      <DependentUpon>CtTaskQueuePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtTemperatureChart.resx">
+      <DependentUpon>CtTemperatureChart.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtWash.resx">
+      <DependentUpon>CtWash.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtModuleDragPanel.resx">
+      <DependentUpon>CtModuleDragPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\BasicData\Assistant.resx">
+      <DependentUpon>Assistant.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\BasicData\Bottle.resx">
+      <DependentUpon>Bottle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\BasicData\BrewingProcess.resx">
+      <DependentUpon>BrewingProcess.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\BasicData\DPPConfiguration.resx">
+      <DependentUpon>DPPConfiguration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\BasicData\DPConfiguration.resx">
+      <DependentUpon>DPConfiguration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\BasicData\FormulaGroup.resx">
+      <DependentUpon>FormulaGroup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\BasicData\DyeType.resx">
+      <DependentUpon>DyeType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\BasicData\Note.resx">
+      <DependentUpon>Note.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\BasicData\Operator.resx">
+      <DependentUpon>Operator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\BasicData\UVMeasurement.resx">
+      <DependentUpon>UVMeasurement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\ConPar\ConParShow.resx">
+      <DependentUpon>ConParShow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\ConPar\AbortInfo.resx">
+      <DependentUpon>AbortInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\ConPar\OrderInfo.resx">
+      <DependentUpon>OrderInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Correction\WashSyringe.resx">
+      <DependentUpon>WashSyringe.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Correction\BottleAddWater.resx">
+      <DependentUpon>BottleAddWater.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Correction\BottleABS.resx">
+      <DependentUpon>BottleABS.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Correction\BottleSelf.resx">
+      <DependentUpon>BottleSelf.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Correction\BottleCorrection.resx">
+      <DependentUpon>BottleCorrection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Correction\DMFCorrection.resx">
+      <DependentUpon>DMFCorrection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Correction\WaterCorrection.resx">
+      <DependentUpon>WaterCorrection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\DyeingMan\CupChange.resx">
+      <DependentUpon>CupChange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\DyeingMan\DyeingMan.resx">
+      <DependentUpon>DyeingMan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\DyeingMan\NewDyeCode.resx">
+      <DependentUpon>NewDyeCode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\DyeingMan\Preview.resx">
+      <DependentUpon>Preview.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Help\Abort.resx">
+      <DependentUpon>Abort.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Help\Register.resx">
+      <DependentUpon>Register.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\HistoricalData\Brew.resx">
+      <DependentUpon>Brew.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\HistoricalData\Dyeing.resx">
+      <DependentUpon>Dyeing.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\HistoricalData\Formulas.resx">
+      <DependentUpon>Formulas.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\HistoricalData\Rectification.resx">
+      <DependentUpon>Rectification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\HistoricalData\Self.resx">
+      <DependentUpon>Self.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\HistoricalData\UV.resx">
+      <DependentUpon>UV.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Homepage\BottleInfo.resx">
+      <DependentUpon>BottleInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Homepage\CupInfo.resx">
+      <DependentUpon>CupInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Homepage\Home.resx">
+      <DependentUpon>Home.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Login\ChangePassword.resx">
+      <DependentUpon>ChangePassword.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Login\LoginForm.resx">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\MachineDebugging\Alarm.resx">
+      <DependentUpon>Alarm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\MachineDebugging\Debug.resx">
+      <DependentUpon>Debug.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\MachineDebugging\LidLayout.resx">
+      <DependentUpon>LidLayout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\MachineDebugging\Run.resx">
+      <DependentUpon>Run.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\MachineDebugging\UVDebug.resx">
+      <DependentUpon>UVDebug.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Main\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Login\SplashForm.resx">
+      <DependentUpon>SplashForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\UVMan\UVMan.resx">
+      <DependentUpon>UVMan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.manifest" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="My_Image\用户管理.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="My_Image\登录.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="My_Image\close.png" />
+    <None Include="My_Image\布局3.png" />
+    <None Include="My_Image\布局4.png" />
+    <Content Include="智慧色彩.ico" />
+    <None Include="My_Image\布局1.png" />
+    <None Include="My_Image\布局2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.8">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.8 %28x86 和 x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
