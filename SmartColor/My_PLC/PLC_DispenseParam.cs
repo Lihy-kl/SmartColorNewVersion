@@ -16,7 +16,7 @@ namespace SmartColor.My_PLC
         public ProtocolItem SyringeSpeed { get; set; }
         /// <summary>加减速 D805</summary>
         public ProtocolItem SyringeAcc { get; set; }
-        
+
         /// <summary>注液高度 D807（0=气缸上，1=慢速中，2=慢速3位置(带盖加药)）</summary>
         public ProtocolItem DispenseHeight { get; set; }
 
@@ -28,7 +28,7 @@ namespace SmartColor.My_PLC
         /// <param name="SyringeAcc">加减速<param>
         /// <param name="dispenseHeight">注液高度（0=气缸上，1=慢速中，2=慢速3位置(带盖加药)</param>
         public PLC_DispenseParam(
-            int z,int SyringeSpeed, int SyringeAcc,
+            int z, int SyringeSpeed, int SyringeAcc,
              short dispenseHeight)
             : base(PLC.SemiAutomaticOperation.Dispense)
         {
@@ -44,27 +44,27 @@ namespace SmartColor.My_PLC
         /// <param name="z">Z轴坐标</param>
         /// <param name="syringeType">针筒规格 0=小针筒 1=大针筒</param> 
         /// <param name="dispenseHeight">注液高度（0=气缸上，1=慢速中，2=慢速3位置(带盖加药)</param>
-        public PLC_DispenseParam(int z, int syringeType,  short dispenseHeight)
+        public PLC_DispenseParam(int z, int syringeType, short dispenseHeight)
             : base(PLC.SemiAutomaticOperation.Dispense)
         {
             var motion = My_ConPar.Object.CurrentMotion as My_ConPar.Type.PLC.Motion;
             Z = new ProtocolItem(801, typeof(int), z);
             if (dispenseHeight == 0)
             {
-              
-                    SyringeSpeed = new ProtocolItem(803, typeof(int),syringeType == 0? motion.Move_S_HSpeed :motion.Move_B_HSpeed);
-                    SyringeAcc = new ProtocolItem(805, typeof(int), syringeType == 0 ?
-                        motion.Move_S_USpeed:motion.Move_B_USpeed);
+
+                SyringeSpeed = new ProtocolItem(803, typeof(int), syringeType == 0 ? motion.Move_S_HSpeed : motion.Move_B_HSpeed);
+                SyringeAcc = new ProtocolItem(805, typeof(int), syringeType == 0 ?
+                    motion.Move_S_USpeed : motion.Move_B_USpeed);
 
 
             }
             else
             {
                 // 带盖加药，使用慢速3位置速度
-                SyringeSpeed = new ProtocolItem(803, typeof(int),syringeType == 0? 
-                    motion.Move_S_MinHSpeed:motion.Move_B_MinHSpeed);
-                SyringeAcc = new ProtocolItem(805, typeof(int), syringeType == 0?
-                    motion.SMin_UDSpeed:motion.BMin_UDSpeed);
+                SyringeSpeed = new ProtocolItem(803, typeof(int), syringeType == 0 ?
+                    motion.Move_S_MinHSpeed : motion.Move_B_MinHSpeed);
+                SyringeAcc = new ProtocolItem(805, typeof(int), syringeType == 0 ?
+                    motion.SMin_UDSpeed : motion.BMin_UDSpeed);
             }
 
             DispenseHeight = new ProtocolItem(807, typeof(short), dispenseHeight);

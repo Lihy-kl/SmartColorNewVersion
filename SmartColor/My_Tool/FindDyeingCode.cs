@@ -120,7 +120,7 @@ namespace SmartColor.My_Tool
             return (drs, allRows);
         }
 
-      
+
         /// <summary>
         /// 根据染色工艺代码、配方代码、版本号，生成完整的染色明细（与CtDropDetail一致）
         /// 支持一个加药工艺中包含多个染助剂的情况，每个助剂单独输出明细行
@@ -179,7 +179,20 @@ namespace SmartColor.My_Tool
                 if (segment.Count == 0) continue;
                 // 取本段第一个步骤的indexNum，查找浴比
                 int indexNum = Convert.ToInt32(segment[0][6]);
-                double bathRatio = handleBRList[indexNum - 1];
+                double bathRatio = 0;
+                if (handleBRList == null || indexNum <= 0)
+                {
+                    bathRatio = 0;
+                }
+                else if (indexNum > handleBRList.Count)
+                {
+                    bathRatio = handleBRList[0]; // 默认取第一个浴比
+                }
+                else
+                {
+                    bathRatio = handleBRList[indexNum - 1];
+                }
+
                 double totalBath = clothWeight * bathRatio;
 
                 // 统计本段所有加药步骤的加药量（支持多助剂）

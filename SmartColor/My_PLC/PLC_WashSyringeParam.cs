@@ -26,16 +26,16 @@ namespace SmartColor.My_PLC
         /// 洗针筒参数构造函数
         /// </summary>
         public PLC_WashSyringeParam(
-            short zOffset,
-            short smallSyringeSpeed,
-            short smallSyringeAcc,
+            int zOffset,
+            int smallSyringeSpeed,
+            int smallSyringeAcc,
             short syringeType,
             short washCount)
             : base(PLC.SemiAutomaticOperation.WashSyringe)
         {
-            ZOffset = new ProtocolItem(801, typeof(short), zOffset);
-            SyringeSpeed = new ProtocolItem(803, typeof(short), smallSyringeSpeed);
-            SyringeAcc = new ProtocolItem(805, typeof(short), smallSyringeAcc);
+            ZOffset = new ProtocolItem(801, typeof(int), zOffset);
+            SyringeSpeed = new ProtocolItem(803, typeof(int), smallSyringeSpeed);
+            SyringeAcc = new ProtocolItem(805, typeof(int), smallSyringeAcc);
          
             SyringeType = new ProtocolItem(807, typeof(short), syringeType);
             WashCount = new ProtocolItem(808, typeof(short), washCount);
@@ -49,9 +49,9 @@ namespace SmartColor.My_PLC
             : base(PLC.SemiAutomaticOperation.WashSyringe)
         {
             var motion = My_ConPar.Object.CurrentMotion as My_ConPar.Type.PLC.Motion;
-            ZOffset = new ProtocolItem(801, typeof(short), (short)(motion?.Home_Z_Offset ?? 0));
-            SyringeSpeed = new ProtocolItem(803, typeof(short), (short)(syringeType ==0? motion?.Move_S_HSpeed ?? 10000: motion?.Move_B_HSpeed ?? 5000));
-            SyringeAcc = new ProtocolItem(805, typeof(short), (short)(syringeType == 0 ? ((motion?.Move_S_USpeed ?? 500) * 10):((motion?.Move_B_USpeed ?? 500) * 10)));
+            ZOffset = new ProtocolItem(801, typeof(int), motion?.Home_Z_Offset ?? 0);
+            SyringeSpeed = new ProtocolItem(803, typeof(int), syringeType == 0 ? motion?.Move_S_HSpeed ?? 10000 : motion?.Move_B_HSpeed ?? 5000);
+            SyringeAcc = new ProtocolItem(805, typeof(int), syringeType == 0 ? (motion?.Move_S_USpeed ?? 500) * 10 : (motion?.Move_B_USpeed ?? 500) * 10);
             SyringeType = new ProtocolItem(807, typeof(short), syringeType);
             WashCount = new ProtocolItem(808, typeof(short), (short)My_ConPar.Other.WashTime);
         }

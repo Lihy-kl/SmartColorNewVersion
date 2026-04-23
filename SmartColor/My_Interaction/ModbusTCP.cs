@@ -149,7 +149,7 @@ namespace SmartColor.My_Interaction
                     catch (Exception ex)
                     {
                         LastError = ex.Message;
-                        Logger.Error($"[{_instanceName}] TCP发送数据失败(第{retry + 1}次)", ex);
+                      //  Logger.Error($"[{_instanceName}] TCP发送数据失败(第{retry + 1}次)", ex);
                         retry++;
                         if (retry >= maxRetry)
                         {

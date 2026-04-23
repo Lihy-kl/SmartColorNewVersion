@@ -39,7 +39,7 @@ namespace SmartColor.My_PLC
                 waterTime = waterTime / 0.9;
             }
             WaterTime = new ProtocolItem(801, typeof(int), (int)(waterTime * 1000));
-            UseFlowMeter = new ProtocolItem(802, typeof(short), My_ConPar.Hardware.UseFlowmeter);
+            UseFlowMeter = new ProtocolItem(803, typeof(short), My_ConPar.Hardware.UseFlowmeter);
         }
     }
 

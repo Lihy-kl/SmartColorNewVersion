@@ -1,4 +1,6 @@
 ﻿using com.google.zxing;
+using Lib_Card;
+using Lib_Card.ADT8940A1.Module;
 using SmartColor.My_AutomaticModule;
 using SmartColor.My_Control;
 using SmartColor.My_File;
@@ -194,10 +196,13 @@ namespace SmartColor.My_Form.MachineDebugging
         {
             base.OnLoad(e);
             IsDebugFormActive = true;
-            // 切换PLC读取模式为Debug，确保能获取全部输入输出数据
-            My_ConPar.Object.CurrentPLC?.SetReadMode(PLC.PlcReadMode.Debug);
-            // 构建IO表功能名到字段的映射，提升后续查找效率
-            BuildIoFieldMap();
+            if (My_ConPar.Machine.MachineType == 0)
+            {
+                // 切换PLC读取模式为Debug，确保能获取全部输入输出数据
+                My_ConPar.Object.CurrentPLC?.SetReadMode(PLC.PlcReadMode.Debug);
+                // 构建IO表功能名到字段的映射，提升后续查找效率
+                BuildIoFieldMap();
+            }
             Tmr.Start();
         }
 
@@ -207,7 +212,8 @@ namespace SmartColor.My_Form.MachineDebugging
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
             IsDebugFormActive = false;
-            My_ConPar.Object.CurrentPLC?.SetReadMode(PLC.PlcReadMode.Normal);
+            if (My_ConPar.Machine.MachineType == 0)
+                My_ConPar.Object.CurrentPLC?.SetReadMode(PLC.PlcReadMode.Normal);
             Tmr.Stop();
             base.OnFormClosed(e);
         }
@@ -218,15 +224,33 @@ namespace SmartColor.My_Form.MachineDebugging
         private void BuildIoFieldMap()
         {
             _ioFieldMap = new Dictionary<string, MemberInfo>(StringComparer.OrdinalIgnoreCase);
-            var io = My_ConPar.Object.CurrentMachine as SmartColor.My_ConPar.Type.PLC.IO;
-            if (io == null) return;
-            // 遍历所有InPut_开头的属性，提取功能名
-            foreach (var prop in io.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic))
+            if (My_ConPar.Machine.MachineType == 0)
             {
-                if (prop.Name.StartsWith("InPut_"))
+                var io = My_ConPar.Object.CurrentMachine as SmartColor.My_ConPar.Type.PLC.IO;
+                if (io == null) return;
+                // 遍历所有InPut_开头的属性，提取功能名
+                foreach (var prop in io.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic))
                 {
-                    string funcName = prop.Name.Substring("InPut_".Length);
-                    _ioFieldMap[funcName] = prop;
+                    if (prop.Name.StartsWith("InPut_"))
+                    {
+                        string funcName = prop.Name.Substring("InPut_".Length);
+                        _ioFieldMap[funcName] = prop;
+                    }
+                }
+            }
+            else
+            {
+                var io = My_ConPar.Object.CurrentMachine as SmartColor.My_ConPar.Type.BoaedCard.IO;
+
+                if (io == null) return;
+                // 遍历所有InPut_开头的属性，提取功能名
+                foreach (var prop in io.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic))
+                {
+                    if (prop.Name.StartsWith("InPut_"))
+                    {
+                        string funcName = prop.Name.Substring("InPut_".Length);
+                        _ioFieldMap[funcName] = prop;
+                    }
                 }
             }
         }
@@ -236,66 +260,187 @@ namespace SmartColor.My_Form.MachineDebugging
         /// </summary>
         private void Tmr_Tick(object sender, EventArgs e)
         {
-            // 获取PLC对象
-            var plc = My_ConPar.Object.CurrentPLC;
-            if (plc == null) return;
-
-            // 反射获取PLC的_Receive字段（包含所有接收数据）
-            var receiveField = typeof(PLC).GetField("_Receive", BindingFlags.NonPublic | BindingFlags.Instance);
-            var receive = receiveField?.GetValue(plc) as PLC_Receive;
-            if (receive == null) return;
-
-            // 天平值显示（单位：g，保留两位小数）
-            if (receive.BalanceData?.Value != null)
+            if (My_ConPar.Machine.MachineType == 0)
             {
-                int roundDigits = My_Tool.BalanceStableReading.RetainDecimals();
-                double value = Convert.ToInt32(receive.BalanceData.Value) / 1000.0;
+                // 获取PLC对象
+                var plc = My_ConPar.Object.CurrentPLC;
+                if (plc == null) return;
 
-                LabBalanceValue.Text = (Math.Round(value, roundDigits)).ToString();
+                // 反射获取PLC的_Receive字段（包含所有接收数据）
+                var receiveField = typeof(PLC).GetField("_Receive", BindingFlags.NonPublic | BindingFlags.Instance);
+                var receive = receiveField?.GetValue(plc) as PLC_Receive;
+                if (receive == null) return;
 
-            }
-
-            if (My_ConPar.Hardware.UseCylinderPositioningEncoder == 1)
-            {
-                // 气缸定位编码器显示
-                TxtCylinderEncoder.Text = (Math.Round(Convert.ToDouble(receive.CylinderEncoderPosition?.Value?.ToString() ?? "0") / 100, 2)).ToString();
-            }
-
-
-
-            // 轴坐标显示
-            TxtRPosX.Text = receive.X_CurrentPosition?.Value?.ToString() ?? "";
-            TxtRPosY.Text = receive.Y_CurrentPosition?.Value?.ToString() ?? "";
-            TxtCPosZ.Text = receive.Z_CurrentPosition?.Value?.ToString() ?? "";
-
-            // 轴速度显示
-            TxtCSpeedX.Text = receive.X_CurrentSpeed?.Value?.ToString() ?? "";
-            TxtCSpeedY.Text = receive.Y_CurrentSpeed?.Value?.ToString() ?? "";
-            TxtCSpeedZ.Text = receive.Z_CurrentSpeed?.Value?.ToString() ?? "";
-
-            // 刷新X0-X17输入信号
-            if (receive.InputX0_X17?.Value != null)
-                RefreshInputPack(Convert.ToInt32(receive.InputX0_X17.Value), X905BitToCheckBoxName);
-            // 刷新X20-X57输入信号
-            if (receive.InputX20_X57?.Value != null)
-                RefreshInputPack(Convert.ToInt32(receive.InputX20_X57.Value), X923BitToCheckBoxName);
-
-            // 刷新输出点字体颜色
-            if (receive.OutputY0_Y17?.Value != null)
-                RefreshOutputPack(Convert.ToInt32(receive.OutputY0_Y17.Value), Y907BitToButtonName);
-            if (receive.OutputY20_Y57?.Value != null)
-                RefreshOutputPack(Convert.ToInt32(receive.OutputY20_Y57.Value), Y925BitToButtonName);
-
-            // UseTime监控逻辑
-            if (_monitorUseTime && receive.UseTime != null && receive.UseTime.Value != null)
-            {
-                int useTime = Convert.ToInt32(receive.UseTime.Value);
-                if (useTime != 0 && useTime != -1 && useTime != _lastUseTime)
+                // 天平值显示（单位：g，保留两位小数）
+                if (receive.BalanceData?.Value != null)
                 {
-                    _monitorUseTime = false; // 只触发一次
-                    _lastUseTime = useTime;
-                    MessageEventManager.Instance.RequestShowBalloonTip($"{_currentActionName}动作完成，用时 {useTime} ms");
+                    int roundDigits = My_Tool.BalanceStableReading.RetainDecimals();
+                    double value = Convert.ToInt32(receive.BalanceData.Value) / 1000.0;
+
+                    LabBalanceValue.Text = (Math.Round(value, roundDigits)).ToString();
+
                 }
+
+                if (My_ConPar.Hardware.UseCylinderPositioningEncoder == 1)
+                {
+                    // 气缸定位编码器显示
+                    TxtCylinderEncoder.Text = (Math.Round(Convert.ToDouble(receive.CylinderEncoderPosition?.Value?.ToString() ?? "0") / 100, 2)).ToString();
+                }
+
+
+
+                // 轴坐标显示
+                TxtRPosX.Text = receive.X_CurrentPosition?.Value?.ToString() ?? "";
+                TxtRPosY.Text = receive.Y_CurrentPosition?.Value?.ToString() ?? "";
+                TxtCPosZ.Text = receive.Z_CurrentPosition?.Value?.ToString() ?? "";
+
+                // 轴速度显示
+                TxtCSpeedX.Text = receive.X_CurrentSpeed?.Value?.ToString() ?? "";
+                TxtCSpeedY.Text = receive.Y_CurrentSpeed?.Value?.ToString() ?? "";
+                TxtCSpeedZ.Text = receive.Z_CurrentSpeed?.Value?.ToString() ?? "";
+
+                // 刷新X0-X17输入信号
+                if (receive.InputX0_X17?.Value != null)
+                    RefreshInputPack(Convert.ToInt32(receive.InputX0_X17.Value), X905BitToCheckBoxName);
+                // 刷新X20-X57输入信号
+                if (receive.InputX20_X57?.Value != null)
+                    RefreshInputPack(Convert.ToInt32(receive.InputX20_X57.Value), X923BitToCheckBoxName);
+
+                // 刷新输出点字体颜色
+                if (receive.OutputY0_Y17?.Value != null)
+                    RefreshOutputPack(Convert.ToInt32(receive.OutputY0_Y17.Value), Y907BitToButtonName);
+                if (receive.OutputY20_Y57?.Value != null)
+                    RefreshOutputPack(Convert.ToInt32(receive.OutputY20_Y57.Value), Y925BitToButtonName);
+
+                // UseTime监控逻辑
+                if (_monitorUseTime && receive.UseTime != null && receive.UseTime.Value != null)
+                {
+                    int useTime = Convert.ToInt32(receive.UseTime.Value);
+                    if (useTime != 0 && useTime != -1 && useTime != _lastUseTime)
+                    {
+                        _monitorUseTime = false; // 只触发一次
+                        _lastUseTime = useTime;
+                        MessageEventManager.Instance.RequestShowBalloonTip($"{_currentActionName}动作完成，用时 {useTime} ms");
+                    }
+                }
+            }
+            else
+            {
+                //SmartColor.My_ConPar.Type.BoaedCard.IO adt8940a1io = new SmartColor.My_ConPar.Type.BoaedCard.IO();
+                var boaed = SmartColor.My_ConPar.Object.CurrentMachine as SmartColor.My_ConPar.Type.BoaedCard.IO;
+
+                foreach (CheckBox checkBox in this.grp_in.Controls)
+                {
+                    string sName = checkBox.Name.Substring(3);
+
+                    foreach (PropertyInfo info in boaed.GetType().GetProperties())
+                    {
+                        if (info.Name == sName)
+                        {
+                            int iRes = Lib_Card.CardObject.OA1Input.InPutStatus(Convert.ToInt32(info.GetValue(boaed)));
+                            if (0 == iRes)
+                                checkBox.Checked = false;
+                            else if (1 == iRes)
+                                checkBox.Checked = true;
+                            else
+                            {
+                                My_File.LocalTranslator.ShowMessage("驱动异常", "InPutStatus", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+
+                            break;
+                        }
+
+                    }
+                }
+
+                foreach (Button button in this.grp_out.Controls)
+                {
+                    string sName = button.Name.Substring(3);
+                    foreach (PropertyInfo info in boaed.GetType().GetProperties())
+                    {
+                        if (info.Name == sName)
+                        {
+                            int iRes = Lib_Card.CardObject.OA1.ReadOutPut(Convert.ToInt32(info.GetValue(boaed)));
+                            if (0 == iRes)
+                                button.ForeColor = Color.Black;
+                            else if (1 == iRes)
+                                button.ForeColor = Color.Red;
+                            else
+                            {
+                                My_File.LocalTranslator.ShowMessage("驱动异常", "ReadOutPut", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                int iValue = 0;
+                int iAxisRes = Lib_Card.CardObject.OA1.ReadAxisSpeed(boaed.Axis_X, ref iValue);
+                if (0 == iAxisRes)
+                    TxtCSpeedX.Text = iValue.ToString();
+                else
+                {
+                    My_File.LocalTranslator.ShowMessage("驱动异常", "ReadAxisSpeed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+                iAxisRes = Lib_Card.CardObject.OA1.ReadAxisActualPosition(boaed.Axis_X, ref iValue);
+                if (0 == iAxisRes)
+                    TxtRPosX.Text = iValue.ToString();
+                else
+                {
+                    My_File.LocalTranslator.ShowMessage("驱动异常", "ReadAxisPosition", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+                //iAxisRes = Lib_Card.CardObject.OA1.ReadAxisCommandPosition(Lib_Card.ADT8940A1.ADT8940A1_IO.Axis_X, ref iValue);
+                //if (0 == iAxisRes)
+                //    TxtCPosX.Text = iValue.ToString();
+                //else
+                //{
+                //    FADM_Form.CustomMessageBox.Show("驱动异常", "ReadAxisPosition", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                //}
+
+                iAxisRes = Lib_Card.CardObject.OA1.ReadAxisSpeed(boaed.Axis_Y, ref iValue);
+                if (0 == iAxisRes)
+                    TxtCSpeedY.Text = iValue.ToString();
+                else
+                {
+                    My_File.LocalTranslator.ShowMessage("驱动异常", ".ReadAxisSpeed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+                iAxisRes = Lib_Card.CardObject.OA1.ReadAxisActualPosition(boaed.Axis_Y, ref iValue);
+                if (0 == iAxisRes)
+                    TxtRPosY.Text = iValue.ToString();
+                else
+                {
+                    My_File.LocalTranslator.ShowMessage("驱动异常", "ReadAxisPosition", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+                //iAxisRes = Lib_Card.CardObject.OA1.ReadAxisCommandPosition(Lib_Card.ADT8940A1.ADT8940A1_IO.Axis_Y, ref iValue);
+                //if (0 == iAxisRes)
+                //    TxtCPosY.Text = iValue.ToString();
+                //else
+                //{
+                //    FADM_Form.CustomMessageBox.Show("驱动异常", "ReadAxisPosition", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                //}
+
+                iAxisRes = Lib_Card.CardObject.OA1.ReadAxisSpeed(boaed.Axis_Z, ref iValue);
+                if (0 == iAxisRes)
+                    TxtCSpeedZ.Text = iValue.ToString();
+                else
+                {
+                    My_File.LocalTranslator.ShowMessage("驱动异常", ".ReadAxisSpeed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+                iAxisRes = Lib_Card.CardObject.OA1.ReadAxisCommandPosition(boaed.Axis_Z, ref iValue);
+                if (0 == iAxisRes)
+                    TxtCPosZ.Text = iValue.ToString();
+                else
+                {
+                    My_File.LocalTranslator.ShowMessage("驱动异常", "ReadAxisPosition", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+
+                LabBalanceValue.Text = My_Tool.BalanceStableReading.CurrentRead.ToString();
             }
         }
 
@@ -484,10 +629,6 @@ namespace SmartColor.My_Form.MachineDebugging
             // 判断当前字体颜色（红色=输出点已激活，黑色=未激活）
             bool isOn = btn.ForeColor == Color.Red;
 
-            // 获取PLC对象
-            var plc = My_ConPar.Object.CurrentPLC as PLC;
-            if (plc == null) return;
-
             // 枚举名与功能名映射（需与PLC.ManualOperation一致）
             PLC.ManualOperation opOn = PLC.ManualOperation.None;
             PLC.ManualOperation opOff = PLC.ManualOperation.None;
@@ -612,12 +753,79 @@ namespace SmartColor.My_Form.MachineDebugging
                 default:
                     return;
             }
+            if (My_ConPar.Machine.MachineType == 0)
+            {
+                // 获取PLC对象
+                var plc = My_ConPar.Object.CurrentPLC as PLC;
+                if (plc == null) return;
 
-            // 根据当前字体颜色决定下发命令
-            if (isOn)
-                plc.EnqueueManualOperation(opOff);
+                
+
+                // 根据当前字体颜色决定下发命令
+                if (isOn)
+                    plc.EnqueueManualOperation(opOff);
+                else
+                    plc.EnqueueManualOperation(opOn);
+            }
             else
-                plc.EnqueueManualOperation(opOn);
+            {
+                var boaed = SmartColor.My_ConPar.Object.CurrentMachine as SmartColor.My_ConPar.Type.BoaedCard.IO;
+                //foreach (Button button in this.grp_out.Controls)
+                {
+                    string sName = btn.Name.Substring(3);
+                    foreach (PropertyInfo info in boaed.GetType().GetProperties())
+                    {
+                        if (info.Name == sName)
+                        {
+                            if (sName == "OutPut_Cylinder_Up")
+                            {
+                                Lib_Card.ADT8940A1.OutPut.Cylinder.Cylinder cylinder;
+                                if (0 == SmartColor.My_ConPar.Hardware.CylinderType)
+                                    cylinder = new Lib_Card.ADT8940A1.OutPut.Cylinder.SingleControl.Cylinder_Condition();
+                                else
+                                    cylinder = new Lib_Card.ADT8940A1.OutPut.Cylinder.DualControl.Cylinder_Condition();
+
+                                if (isOn)
+                                    cylinder.CylinderDown(0);
+                                else
+                                    cylinder.CylinderUp(0);
+
+                            }
+                            else if (sName == "OutPut_Block_Out")
+                            {
+                                Lib_Card.ADT8940A1.OutPut.Block.Block block = new Lib_Card.ADT8940A1.OutPut.Block.Block_Condition();
+                                if (isOn)
+                                    block.Block_In();
+                                else
+                                    block.Block_Out();
+                            }
+                            else if (sName == "OutPut_Slow")
+                            {
+                                CylinderMo cylinderMo = new CylinderMo();
+                                cylinderMo.CylinderSlow(SmartColor.My_ConPar.Hardware.CylinderType, 7);
+                            }
+                            else if (sName == "OutPut_Block_Cylinder")
+                            {
+                                CylinderMo cylinderMo = new CylinderMo();
+                                cylinderMo.CylinderBlock(SmartColor.My_ConPar.Hardware.CylinderType);
+                            }
+                            else if (sName == "OutPut_ResetX" || sName == "OutPut_ResetY")
+                            {
+                            }
+
+                            else
+                            {
+                                if (isOn)
+                                    CardObject.OA1.WriteOutPut(Convert.ToInt32(info.GetValue(boaed)), 0);
+                                else
+                                    CardObject.OA1.WriteOutPut(Convert.ToInt32(info.GetValue(boaed)), 1);
+                            }
+                            break;
+                        }
+                    }
+                }
+
+            }
 
             // 启动UseTime监控
             Thread.Sleep(Tmr.Interval);

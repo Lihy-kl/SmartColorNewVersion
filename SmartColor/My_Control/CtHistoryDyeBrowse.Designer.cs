@@ -17,6 +17,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btn_Record_Print = new System.Windows.Forms.Button();
@@ -36,9 +37,12 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.MiSpectrometer = new System.Windows.Forms.ToolStripMenuItem();
             this.ctRecord1 = new SmartColor.My_Control.CtRecord();
             this.groupBox1.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -275,6 +279,20 @@
             this.label5.Text = "操作员:";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MiSpectrometer});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(137, 26);
+            // 
+            // MiSpectrometer
+            // 
+            this.MiSpectrometer.Name = "MiSpectrometer";
+            this.MiSpectrometer.Size = new System.Drawing.Size(136, 22);
+            this.MiSpectrometer.Text = "分光仪测色";
+            this.MiSpectrometer.Click += new System.EventHandler(this.MiSpectrometer_Click);
+            // 
             // ctRecord1
             // 
             this.ctRecord1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -297,6 +315,7 @@
             this.groupBox1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -323,5 +342,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         public CtRecord ctRecord1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem MiSpectrometer;
     }
 }

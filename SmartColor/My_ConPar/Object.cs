@@ -1,4 +1,5 @@
-﻿using SmartColor.My_PLC;
+﻿using SmartColor.My_ADT8940A1;
+using SmartColor.My_PLC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,6 +51,15 @@ namespace SmartColor.My_ConPar
         /// </summary>
         public static  PLC CurrentPLC = null;
 
+        /// <summary>
+        /// 板块对象（单例）
+        /// </summary>
+        public static ADT8940A1 CurrentADT8940A1 = null;
+
+        /// <summary>
+        /// 串口天平对象
+        /// </summary>
+        public static dynamic Balance = null;
 
     }
 }

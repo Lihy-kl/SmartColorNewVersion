@@ -674,6 +674,31 @@ namespace SmartColor.My_Control
             }
             rdo_Wait.Text = $"等待列表({_wait?.Rows.Count ?? 0})";
         }
+
+        public List<(string FormulaCode, string VersionNum)> GetSelectedFormulaCodes()
+        {
+            var result = new List<(string, string)>();
+            if (rdo_Wait.Checked == true)
+                return result;
+
+            // 按行号（Index）升序排序
+            var rows = ctDataGridView1.SelectedRows
+                .Cast<DataGridViewRow>()
+                .OrderBy(r => r.Index)
+                .ToList();
+
+            foreach (var row in rows)
+            {
+                if (row.Cells.Count >= 2)
+                {
+                    string code = row.Cells[0].Value?.ToString();
+                    string ver = row.Cells[1].Value?.ToString();
+                    if (!string.IsNullOrEmpty(code) && !string.IsNullOrEmpty(ver))
+                        result.Add((code, ver));
+                }
+            }
+            return result;
+        }
         #endregion
     }
 }

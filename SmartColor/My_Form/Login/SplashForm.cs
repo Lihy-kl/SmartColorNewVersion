@@ -258,6 +258,14 @@ namespace SmartColor.My_Form.Login
                         Environment.Exit(1);
                         return;
                     }
+
+                    UpdateProgress(95, "检查天平链接...");
+                    bool cadOk1 = await Task.Run(BalanceCheck);
+                    if (!cadOk1)
+                    {
+                        Environment.Exit(1);
+                        return;
+                    }
                 }
 
                 UpdateProgress(100, "启动完成");
@@ -368,6 +376,9 @@ namespace SmartColor.My_Form.Login
             //加载开料机参数
             LoadCuttingMachineConfig();
 
+            //加载分光仪参数
+            LoadSpectrometerConfig();
+
             //加载称布机参数
             LoadWeighingMachineConfig();
 
@@ -377,6 +388,32 @@ namespace SmartColor.My_Form.Login
             //加载ERP交互参数
             LoadERPConfig();
 
+        }
+
+        /// <summary>
+        /// 配置分光仪参数
+        /// </summary>
+        private void LoadSpectrometerConfig()
+        {
+            switch (My_ConPar.Machine.Spectrometer)
+            {
+                case 0:
+                    return;
+                case 1:
+                    {
+                        var machinePath = Path.Combine(Environment.CurrentDirectory, "Config", "Spectrometer.ini");
+                        My_File.ConfigHelper.CheckAndAssignOrPrompt(
+                            this, machinePath, typeof(My_ConPar.Spectrometer.Desktop),
+                            () => new My_Form.ConPar.ConParShow("分光仪参数", "Spectrometer.ini", typeof(My_ConPar.Spectrometer.Desktop)));
+
+                        break;
+                    }
+                default:
+                    My_File.LocalTranslator.ShowMessage("分光仪参数配置错误，程序即将退出！", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Environment.Exit(1);
+                    return;
+
+            }
         }
 
         /// <summary>
@@ -439,11 +476,11 @@ namespace SmartColor.My_Form.Login
             else if (My_ConPar.Machine.MachineType == 1)
             {
                 // 板卡运动参数
-                var cardMotionPath = Path.Combine(Environment.CurrentDirectory, "Config", "BoardCard_Motion.ini");
+                var cardMotionPath = Path.Combine(Environment.CurrentDirectory, "Config", "BoaedCard_Motion.ini");
                 var cardMotion = new SmartColor.My_ConPar.Type.BoaedCard.Motion();
                 SmartColor.My_File.ConfigHelper.CheckAndAssignOrPrompt(
                     this, cardMotionPath, typeof(SmartColor.My_ConPar.Type.BoaedCard.Motion),
-                    () => new My_Form.ConPar.ConParShow("板卡运动参数", "BoardCard_Motion.ini", typeof(SmartColor.My_ConPar.Type.BoaedCard.Motion), cardMotion), cardMotion);
+                    () => new My_Form.ConPar.ConParShow("板卡运动参数", "BoaedCard_Motion.ini", typeof(SmartColor.My_ConPar.Type.BoaedCard.Motion), cardMotion), cardMotion);
                 My_ConPar.Object.CurrentMotion = cardMotion;
             }
             else
@@ -1093,7 +1130,17 @@ namespace SmartColor.My_Form.Login
             //板卡自检
             try
             {
-                My_ADT8940A1.Card.CurrentBoardCard = new My_ADT8940A1.Card();
+                My_ConPar.Object.CurrentADT8940A1 = new My_ADT8940A1.ADT8940A1();
+
+                Lib_Card.CardObject.OA1 = new Lib_Card.ADT8940A1.ADT8940A1_Card();
+                Lib_Card.CardObject.OA1.CardInit();
+
+                if (SmartColor.My_ConPar.Hardware.BlenderType == 0)
+                {
+                    Lib_Card.ADT8940A1.OutPut.Blender.Blender blender = new Lib_Card.ADT8940A1.OutPut.Blender.Blender_Basic();
+                    if (-1 == blender.Blender_Off())
+                        throw new Exception("驱动异常");
+                }
                 return true;
             }
             catch (Exception ex)
@@ -1114,6 +1161,49 @@ namespace SmartColor.My_Form.Login
             catch (Exception ex)
             {
                 My_File.LocalTranslator.ShowMessage("PLC初始化失败，程序即将退出！\n" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
+
+        private bool BalanceCheck()
+        {
+            //串口天平自检
+            try
+            {
+                if (My_ConPar.Object.CurrentBalance.BalanceType == 0)
+                {
+
+
+                    My_ConPar.Object.Balance = new Lib_SerialPort.Balance.METTLER
+                    {
+                        PortName = "COM4",
+                        BaudRate = Lib_SerialPort.BaudRates.BR_9600,
+                        DataBits = Lib_SerialPort.DataBits.Eight,
+                        StopBits = System.IO.Ports.StopBits.One,
+                        Parity = System.IO.Ports.Parity.None
+                    };
+
+                    My_ConPar.Object.Balance.Open();
+                    return true;
+                }
+                else
+                {
+                    My_ConPar.Object.Balance = new Lib_SerialPort.Balance.SHINKO
+                    {
+                        PortName = "COM4",
+                        BaudRate = Lib_SerialPort.BaudRates.BR_9600,
+                        DataBits = Lib_SerialPort.DataBits.Eight,
+                        StopBits = System.IO.Ports.StopBits.One,
+                        Parity = System.IO.Ports.Parity.None
+                    };
+
+                    My_ConPar.Object.Balance.Open();
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                My_File.LocalTranslator.ShowMessage("天平初始化失败，程序即将退出！\n" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
         }

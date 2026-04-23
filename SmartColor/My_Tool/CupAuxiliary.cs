@@ -395,8 +395,9 @@ namespace SmartColor.My_Tool
         /// </summary>
         /// <param name="cupNum">杯号</param>
         /// <param name="cupChoice">杯选择</param>
+        /// <param name="needUpdateWaitList">是否需要更新等待列表</param>
         /// <returns></returns>
-        public static void CupFinish(int cupNum, int cupChoice)
+        public static void CupFinish(int cupNum, int cupChoice, bool needUpdateWaitList)
         {
             var (mainCup, subCup) = GetCupPair(cupNum);
 
@@ -412,10 +413,10 @@ namespace SmartColor.My_Tool
                 if (cupChoice == 0 || cupChoice == 2)
                     CupFinishSingle(subCup);
             }
-
-            UpdateWaitList(mainCup);
+            UpdateWaitList(mainCup, needUpdateWaitList);
             if (mainCup != subCup)
-                UpdateWaitList(subCup);
+                UpdateWaitList(subCup, needUpdateWaitList);
+
         }
 
         /// <summary>
@@ -556,150 +557,156 @@ namespace SmartColor.My_Tool
 
         }
 
+
+        // 静态锁对象，保证批次插入和等待列表处理的线程安全
+        private static readonly object HandleCupFinishedLock = new object();
         /// <summary>
         /// 归档后自动插入批次并自动滴液
         /// </summary>
         public static void HandleCupFinished(int cupNum, bool forceInsert = false)
         {
-            // 防止重复归档
-
-            var dropHead = DropBatchData.GetHeadData();
-            if (dropHead != null && dropHead.AsEnumerable().Any(r => Convert.ToInt32(r[DROP_HEAD.CupNum]) == cupNum))
-                return;
-
-            // 获取等待列表
-
-            var waitList = DropWaitData.GetData();
-            if (waitList == null || waitList.Rows.Count == 0)
-                return;
-            var waitRows = waitList.AsEnumerable().OrderBy(r => Convert.ToInt32(r[WAIT_LIST.MyID])).ToList();
-
-            // 获取主副杯状态
-            CupData.GetData();
-            var (mainInfo, subInfo) = GetMSCupInfo(cupNum);
-            int mainCupNum = mainInfo.CupNum;
-            int subCupNum = subInfo.CupNum;
-            int mainEnable = mainInfo.Enable ?? 0;
-            int subEnable = subInfo.Enable ?? 0;
-            int mainIsUsing = mainInfo.IsUsing ?? 0;
-            int subIsUsing = subInfo.IsUsing ?? 0;
-
-            // 1. 主副杯都下线 或 有一个在使用，直接退出
-            if (!forceInsert && ((mainEnable == 0 && subEnable == 0) || mainIsUsing == 1 || subIsUsing == 1))
-                return;
-
-            // 2. 只插入批次表，不分配批次号
-            // 记录新插入的HeadID（其实后续批次号分配时会统一处理所有未分配批次号的批次）
-            void InsertIfFound(DataRow waitRow, int cup)
+            lock (HandleCupFinishedLock)
             {
-                if (waitRow != null)
-                {
-                    InsertDropBatchAndGetHeadId(waitRow, cup);
-                    SqlServer.Delete(WAIT_LIST.TableName, $"{WAIT_LIST.MyID}=@MyID",
-                        new SqlParameter("@MyID", waitRow[WAIT_LIST.MyID]));
-                    waitRows.Remove(waitRow);
-                }
-            }
+                // 防止重复归档
 
-            if (mainEnable == 1 && subEnable == 0)
-            {
-                var mainWaitRow = waitRows.FirstOrDefault(r => Convert.ToInt32(r[WAIT_LIST.CupNum]) == mainCupNum);
-                if (mainWaitRow != null)
-                    InsertIfFound(mainWaitRow, mainCupNum);
-                else
-                {
-                    var zeroWaitRow = waitRows.FirstOrDefault(r => Convert.ToInt32(r[WAIT_LIST.CupNum]) == 0);
-                    if (zeroWaitRow != null)
-                        InsertIfFound(zeroWaitRow, mainCupNum);
-                }
-            }
-            else if (mainEnable == 0 && subEnable == 1)
-            {
-                var subWaitRow = waitRows.FirstOrDefault(r => Convert.ToInt32(r[WAIT_LIST.CupNum]) == subCupNum);
-                if (subWaitRow != null)
-                    InsertIfFound(subWaitRow, subCupNum);
-                else
-                {
-                    var zeroWaitRow = waitRows.FirstOrDefault(r => Convert.ToInt32(r[WAIT_LIST.CupNum]) == 0);
-                    if (zeroWaitRow != null)
-                        InsertIfFound(zeroWaitRow, subCupNum);
-                }
-            }
-            else if (mainEnable == 1 && subEnable == 1)
-            {
-                var mainWaitRow = waitRows.FirstOrDefault(r => Convert.ToInt32(r[WAIT_LIST.CupNum]) == mainCupNum);
-                if (mainWaitRow != null)
-                {
-                    InsertIfFound(mainWaitRow, mainCupNum);
-                    string mainDyeingCode = GetDyeingCodeFromWaitRow(mainWaitRow);
+                var dropHead = DropBatchData.GetHeadData();
+                if (dropHead != null && dropHead.AsEnumerable().Any(r => Convert.ToInt32(r[DROP_HEAD.CupNum]) == cupNum))
+                    return;
 
-                    var subWaitRow = waitRows.FirstOrDefault(r =>
-                        Convert.ToInt32(r[WAIT_LIST.CupNum]) == subCupNum &&
-                        GetDyeingCodeFromWaitRow(r) == mainDyeingCode);
-                    if (subWaitRow != null)
-                        InsertIfFound(subWaitRow, subCupNum);
-                    else
+                // 获取等待列表
+
+                var waitList = DropWaitData.GetData();
+                if (waitList == null || waitList.Rows.Count == 0)
+                    return;
+                var waitRows = waitList.AsEnumerable().OrderBy(r => Convert.ToInt32(r[WAIT_LIST.MyID])).ToList();
+
+                // 获取主副杯状态
+                CupData.GetData();
+                var (mainInfo, subInfo) = GetMSCupInfo(cupNum);
+                int mainCupNum = mainInfo.CupNum;
+                int subCupNum = subInfo.CupNum;
+                int mainEnable = mainInfo.Enable ?? 0;
+                int subEnable = subInfo.Enable ?? 0;
+                int mainIsUsing = mainInfo.IsUsing ?? 0;
+                int subIsUsing = subInfo.IsUsing ?? 0;
+
+                // 1. 主副杯都下线 或 有一个在使用，直接退出
+                if (!forceInsert && ((mainEnable == 0 && subEnable == 0) || mainIsUsing == 1 || subIsUsing == 1))
+                    return;
+
+                // 2. 只插入批次表，不分配批次号
+                // 记录新插入的HeadID（其实后续批次号分配时会统一处理所有未分配批次号的批次）
+                void InsertIfFound(DataRow waitRow, int cup)
+                {
+                    if (waitRow != null)
                     {
-                        var zeroWaitRow = waitRows.FirstOrDefault(r =>
-                            Convert.ToInt32(r[WAIT_LIST.CupNum]) == 0 &&
-                            GetDyeingCodeFromWaitRow(r) == mainDyeingCode);
-                        if (zeroWaitRow != null)
-                            InsertIfFound(zeroWaitRow, subCupNum);
+                        InsertDropBatchAndGetHeadId(waitRow, cup);
+                        SqlServer.Delete(WAIT_LIST.TableName, $"{WAIT_LIST.MyID}=@MyID",
+                            new SqlParameter("@MyID", waitRow[WAIT_LIST.MyID]));
+                        waitRows.Remove(waitRow);
                     }
                 }
-                else
+
+                if (mainEnable == 1 && subEnable == 0)
                 {
-                    var subWaitRow = waitRows.FirstOrDefault(r => Convert.ToInt32(r[WAIT_LIST.CupNum]) == subCupNum);
-                    if (subWaitRow != null)
-                    {
-                        InsertIfFound(subWaitRow, subCupNum);
-                        string subDyeingCode = GetDyeingCodeFromWaitRow(subWaitRow);
-                        var zeroWaitRow = waitRows.FirstOrDefault(r =>
-                            Convert.ToInt32(r[WAIT_LIST.CupNum]) == 0 &&
-                            GetDyeingCodeFromWaitRow(r) == subDyeingCode);
-                        if (zeroWaitRow != null)
-                            InsertIfFound(zeroWaitRow, mainCupNum);
-                    }
+                    var mainWaitRow = waitRows.FirstOrDefault(r => Convert.ToInt32(r[WAIT_LIST.CupNum]) == mainCupNum);
+                    if (mainWaitRow != null)
+                        InsertIfFound(mainWaitRow, mainCupNum);
                     else
                     {
                         var zeroWaitRow = waitRows.FirstOrDefault(r => Convert.ToInt32(r[WAIT_LIST.CupNum]) == 0);
                         if (zeroWaitRow != null)
-                        {
                             InsertIfFound(zeroWaitRow, mainCupNum);
-                            string mainDyeingCode = GetDyeingCodeFromWaitRow(zeroWaitRow);
-                            var zeroWaitRow2 = waitRows.FirstOrDefault(r =>
+                    }
+                }
+                else if (mainEnable == 0 && subEnable == 1)
+                {
+                    var subWaitRow = waitRows.FirstOrDefault(r => Convert.ToInt32(r[WAIT_LIST.CupNum]) == subCupNum);
+                    if (subWaitRow != null)
+                        InsertIfFound(subWaitRow, subCupNum);
+                    else
+                    {
+                        var zeroWaitRow = waitRows.FirstOrDefault(r => Convert.ToInt32(r[WAIT_LIST.CupNum]) == 0);
+                        if (zeroWaitRow != null)
+                            InsertIfFound(zeroWaitRow, subCupNum);
+                    }
+                }
+                else if (mainEnable == 1 && subEnable == 1)
+                {
+                    var mainWaitRow = waitRows.FirstOrDefault(r => Convert.ToInt32(r[WAIT_LIST.CupNum]) == mainCupNum);
+                    if (mainWaitRow != null)
+                    {
+                        InsertIfFound(mainWaitRow, mainCupNum);
+                        string mainDyeingCode = GetDyeingCodeFromWaitRow(mainWaitRow);
+
+                        var subWaitRow = waitRows.FirstOrDefault(r =>
+                            Convert.ToInt32(r[WAIT_LIST.CupNum]) == subCupNum &&
+                            GetDyeingCodeFromWaitRow(r) == mainDyeingCode);
+                        if (subWaitRow != null)
+                            InsertIfFound(subWaitRow, subCupNum);
+                        else
+                        {
+                            var zeroWaitRow = waitRows.FirstOrDefault(r =>
                                 Convert.ToInt32(r[WAIT_LIST.CupNum]) == 0 &&
                                 GetDyeingCodeFromWaitRow(r) == mainDyeingCode);
-                            if (zeroWaitRow2 != null)
-                                InsertIfFound(zeroWaitRow2, subCupNum);
+                            if (zeroWaitRow != null)
+                                InsertIfFound(zeroWaitRow, subCupNum);
+                        }
+                    }
+                    else
+                    {
+                        var subWaitRow = waitRows.FirstOrDefault(r => Convert.ToInt32(r[WAIT_LIST.CupNum]) == subCupNum);
+                        if (subWaitRow != null)
+                        {
+                            InsertIfFound(subWaitRow, subCupNum);
+                            string subDyeingCode = GetDyeingCodeFromWaitRow(subWaitRow);
+                            var zeroWaitRow = waitRows.FirstOrDefault(r =>
+                                Convert.ToInt32(r[WAIT_LIST.CupNum]) == 0 &&
+                                GetDyeingCodeFromWaitRow(r) == subDyeingCode);
+                            if (zeroWaitRow != null)
+                                InsertIfFound(zeroWaitRow, mainCupNum);
+                        }
+                        else
+                        {
+                            var zeroWaitRow = waitRows.FirstOrDefault(r => Convert.ToInt32(r[WAIT_LIST.CupNum]) == 0);
+                            if (zeroWaitRow != null)
+                            {
+                                InsertIfFound(zeroWaitRow, mainCupNum);
+                                string mainDyeingCode = GetDyeingCodeFromWaitRow(zeroWaitRow);
+                                var zeroWaitRow2 = waitRows.FirstOrDefault(r =>
+                                    Convert.ToInt32(r[WAIT_LIST.CupNum]) == 0 &&
+                                    GetDyeingCodeFromWaitRow(r) == mainDyeingCode);
+                                if (zeroWaitRow2 != null)
+                                    InsertIfFound(zeroWaitRow2, subCupNum);
+                            }
                         }
                     }
                 }
-            }
-            if (My_ConPar.Choices.UseAutoDrip == 1)
-            {
-
-                // 通知批次管理器有新批次可滴（只允许Type=3自动染杯）
-                SmartColor.My_AutomaticModule.DropBatchManager.RequestBatchStart(
-                row =>
+                if (My_ConPar.Choices.UseAutoDrip == 1)
                 {
-                    // 取杯号
-                    int cupNo = row.Table.Columns.Contains(SmartColor.My_DataBase.DROP_HEAD.CupNum)
-                        ? Convert.ToInt32(row[SmartColor.My_DataBase.DROP_HEAD.CupNum])
-                        : 0;
-                    // 查找CUP_DETAILS.Type
-                    var dt = SqlServer.Select(SmartColor.My_DataBase.CUP_DETAILS.TableName, $"{SmartColor.My_DataBase.CUP_DETAILS.CupNum} = {cupNo}");
-                    if (dt == null || dt.Rows.Count == 0) return false;
-                    var cupRow = dt.Rows[0];
-                    int type = cupRow.Table.Columns.Contains(SmartColor.My_DataBase.CUP_DETAILS.Type) && cupRow[SmartColor.My_DataBase.CUP_DETAILS.Type] != DBNull.Value
-                        ? Convert.ToInt32(cupRow[SmartColor.My_DataBase.CUP_DETAILS.Type])
-                        : 0;
-                    return type == 3;
-                }
-            );
-            }
 
-            CupFinished?.Invoke();
+                    // 通知批次管理器有新批次可滴（只允许Type=3自动染杯）
+                    SmartColor.My_AutomaticModule.DropBatchManager.RequestBatchStart(
+                    row =>
+                    {
+                        // 取杯号
+                        int cupNo = row.Table.Columns.Contains(SmartColor.My_DataBase.DROP_HEAD.CupNum)
+                            ? Convert.ToInt32(row[SmartColor.My_DataBase.DROP_HEAD.CupNum])
+                            : 0;
+                        // 查找CUP_DETAILS.Type
+                        var dt = SqlServer.Select(SmartColor.My_DataBase.CUP_DETAILS.TableName, $"{SmartColor.My_DataBase.CUP_DETAILS.CupNum} = {cupNo}");
+                        if (dt == null || dt.Rows.Count == 0) return false;
+                        var cupRow = dt.Rows[0];
+                        int type = cupRow.Table.Columns.Contains(SmartColor.My_DataBase.CUP_DETAILS.Type) && cupRow[SmartColor.My_DataBase.CUP_DETAILS.Type] != DBNull.Value
+                            ? Convert.ToInt32(cupRow[SmartColor.My_DataBase.CUP_DETAILS.Type])
+                            : 0;
+                        return type == 3;
+                    }
+                );
+                }
+
+                CupFinished?.Invoke();
+            }
         }
 
 
@@ -754,10 +761,10 @@ namespace SmartColor.My_Tool
                     SqlServer.Insert(DYE_DETAILS.TableName, dict);
                 }
 
-                if(!string.IsNullOrEmpty(dyeingCode) )
+                if (!string.IsNullOrEmpty(dyeingCode))
                 {
-                    var(mainCup,subCup) = GetMSCupInfo(targetCupNum);
-                    if(mainCup.CupNum != subCup.CupNum)
+                    var (mainCup, subCup) = GetMSCupInfo(targetCupNum);
+                    if (mainCup.CupNum != subCup.CupNum)
                     {
                         var currentCupNum = mainCup.CupNum == targetCupNum ? mainCup.CupNum : subCup.CupNum;
                         var otherCupNum = mainCup.CupNum == targetCupNum ? subCup.CupNum : mainCup.CupNum;
@@ -940,7 +947,7 @@ namespace SmartColor.My_Tool
         }
 
 
-        public static void UpdateWaitList(int cupNum)
+        public static void UpdateWaitList(int cupNum, bool needUpdateWait)
         {
             Task.Run(async () =>
             {
@@ -949,8 +956,11 @@ namespace SmartColor.My_Tool
                     // 触发事件，通知界面刷新
                     CupFinished?.Invoke();
                     await Task.Yield(); // 确保数据先被上层处理，再继续执行后续逻辑
-                    await Task.Delay(60000);
-                    HandleCupFinished(cupNum);
+                    if (needUpdateWait)
+                    {
+                        await Task.Delay(60000);
+                        HandleCupFinished(cupNum);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -960,7 +970,7 @@ namespace SmartColor.My_Tool
 
         }
 
-       
+
 
         /// <summary>
         /// 设置杯详情为初始状态
@@ -1543,7 +1553,7 @@ namespace SmartColor.My_Tool
                 await Task.Delay(pollMs);
                 waited += pollMs;
 
-              
+
 
                 if (lockUpCount >= requiredCount)
                 {
@@ -1571,10 +1581,12 @@ namespace SmartColor.My_Tool
                         var useName = My_Tool.CupAuxiliary.GetIsUseing(cup);
                         Logger.Error($"{useName}号杯锁止上信号等待超时");
                         alarmed = true;
+                        return false;
                     }
-                   
+
                     // 继续等待
                 }
+
             }
         }
         #endregion

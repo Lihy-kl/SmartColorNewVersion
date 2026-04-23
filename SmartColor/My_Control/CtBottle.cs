@@ -783,7 +783,7 @@ namespace SmartColor.My_Control
                 [SmartColor.My_DataBase.RUN_TABLE.Machine] = $"点击母液瓶加水调试启动按钮（瓶号：{bottleNo}）"
             }, dt);
 
-            var result = await SmartColor.My_AutomaticModule.BottleAddWaterDebug.SingleBottle(bottleNo);
+            var result = await SmartColor.My_AutomaticModule.BottleAddWaterDebug.EnqueueBottleAddWaterDebugAsync(bottleNo);
 
             if (result.Code == My_Tool.Result.ResultCode.Success)
             {

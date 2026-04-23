@@ -1,6 +1,7 @@
 ﻿using SmartColor.My_Control;
 using SmartColor.My_Cup;
 using SmartColor.My_DataBase;
+using SmartColor.My_File;
 using SmartColor.My_Form.Homepage;
 using System;
 using System.Collections.Generic;
@@ -146,22 +147,46 @@ namespace SmartColor.My_AutomaticModule
         private CtCup FindCupByCupNumSync(int cupNum)
         {
             var area = FindCupAreaByCupNum(cupNum);
-            if (area != null)
+            if (area == null || area.IsDisposed)
+                return null;
+
+            const int maxRetry = 20; // 最多重试20次
+            const int delayMs = 10;  // 每次重试间隔10ms
+
+            for (int retry = 0; retry < maxRetry; retry++)
             {
-                foreach (var ctrl in area.Controls)
+                try
                 {
-                    if (ctrl is GroupBox cupArea)
+                    var groupBoxes = area.Controls.OfType<GroupBox>().ToArray();
+                    foreach (var cupArea in groupBoxes)
                     {
-                        foreach (var subCtrl in cupArea.Controls)
+                        if (cupArea.IsDisposed) continue;
+                        var cups = cupArea.Controls.OfType<CtCup>().ToArray();
+                        foreach (var cup in cups)
                         {
-                            if (subCtrl is CtCup cup && int.TryParse(cup.NO, out int no) && no == cupNum)
+                            if (cup.IsDisposed || cup.Parent == null) continue;
+                            if (int.TryParse(cup.NO, out int no) && no == cupNum)
                             {
                                 return cup;
                             }
                         }
                     }
+                    // 没找到，稍等再试
+                    System.Threading.Thread.Sleep(delayMs);
+                }
+                catch (ObjectDisposedException)
+                {
+                    // 控件被释放，重试
+                    System.Threading.Thread.Sleep(delayMs);
+                }
+                catch (InvalidOperationException)
+                {
+                    // 控件集合变更，重试
+                    System.Threading.Thread.Sleep(delayMs);
                 }
             }
+            // 超过最大重试次数仍未找到
+            Logger.Error($"FindCupByCupNumSync: 超过最大重试次数，未找到杯号{cupNum}对应的CtCup控件");
             return null;
         }
 
@@ -179,6 +204,17 @@ namespace SmartColor.My_AutomaticModule
 
             lock (_commMapLock)
             {
+
+                if(area.AreaType >=2 && area.AreaType <= 4)
+                {
+                    // 只有缸型区域才需要通讯线程
+                }
+                else
+                {
+                    // 非缸型区域不启动通讯线程
+                    return;
+                }
+
                 string ip = area.Ip;
                 if (string.IsNullOrEmpty(ip))
                     throw new Exception("区域IP不能为空");

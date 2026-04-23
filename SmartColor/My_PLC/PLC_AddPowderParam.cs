@@ -25,13 +25,13 @@ namespace SmartColor.My_PLC
         /// <param name="smallSyringeAcc">小针筒加减速时间</param>
         public PLC_AddPowderParam(
             int z,
-            short smallSyringeSpeed,
-            short smallSyringeAcc)
+            int smallSyringeSpeed,
+            int smallSyringeAcc)
             : base(PLC.SemiAutomaticOperation.AddPowder)
         {
             Z = new ProtocolItem(801, typeof(int), z);
-            SmallSyringeSpeed = new ProtocolItem(803, typeof(short), smallSyringeSpeed);
-            SmallSyringeAcc = new ProtocolItem(805, typeof(short), smallSyringeAcc);
+            SmallSyringeSpeed = new ProtocolItem(803, typeof(int), smallSyringeSpeed);
+            SmallSyringeAcc = new ProtocolItem(805, typeof(int), smallSyringeAcc);
         }
 
         /// <summary>
@@ -43,8 +43,8 @@ namespace SmartColor.My_PLC
         {
             var motion = My_ConPar.Object.CurrentMotion as My_ConPar.Type.PLC.Motion;
             Z = new ProtocolItem(801, typeof(int), z);
-            SmallSyringeSpeed = new ProtocolItem(803, typeof(short), motion?.Move_S_HSpeed ?? 0);
-            SmallSyringeAcc = new ProtocolItem(805, typeof(short), (short)((motion?.Move_S_USpeed ?? 500) * 10));
+            SmallSyringeSpeed = new ProtocolItem(803, typeof(int), motion?.Move_S_HSpeed ?? 0);
+            SmallSyringeAcc = new ProtocolItem(805, typeof(int), (motion?.Move_S_USpeed ?? 500) * 10);
         }
     }
 }

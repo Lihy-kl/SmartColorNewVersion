@@ -72,6 +72,14 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CHNSpec.Device.COM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\CHNSpec.Device.COM.dll</HintPath>
+    </Reference>
+    <Reference Include="CHNSpec.Device.Models, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\CHNSpec.Device.Models.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -117,7 +125,93 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Lib_Card\ADT8940A1\ADT8940A1_Card.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\ADT8940A1_IO.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Axis\Axis.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Axis\Axis_Condition.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Cadt8940a1m.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\InPut\InPut.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\InPut\InPut_Basic.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Module\Clamp\GetOrPutClamp.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Module\Cloth\GetOrPutCloth.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Module\Cover\GetOrPutCover.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Module\Cylinder\CylinderMo.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Module\Extraction\Extraction.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Module\Extraction\Extraction_Check.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Module\Extraction\Extraction_Drip.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Module\Home\Home.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Module\Home\Home_Condition.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Module\Infusion\Infusion.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Module\Infusion\Infusion_Mid.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Module\Infusion\Infusion_Up.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Module\Move\Move.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Module\Move\TargeMove.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Module\Put\Put.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Module\Put\Put_Condition.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\Module\Wash\WashSyringe.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Apocenosis\Apocenosis.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Apocenosis\Apocenosis_Basic.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Blender\Blender.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Blender\Blender_Basic.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Block\Block.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Block\Block_Basic.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Block\Block_Condition.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Buzzer\Buzzer.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Buzzer\Buzzer_Basic.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Cylinder\Cylinder.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Cylinder\DualControl\Cylinder_Basic.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Cylinder\DualControl\Cylinder_Condition.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Cylinder\SingleControl\Cylinder_Basic.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Cylinder\SingleControl\Cylinder_Condition.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Decompression\Decompression.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Decompression\Decompression_Basic.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Decompression\Decompression_Condition.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Tongs\Tongs.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Tongs\Tongs_Basic.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Tongs\Tongs_Condition.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Tray\Tray.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Tray\Tray_Basic.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Tray\Tray_Condition.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Waste\Waste.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Waste\Waste_Basic.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Water\Water.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Water\Water_Basic.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Water\Water_Condition.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\X_Power\X_Power.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\X_Power\X_Power_Basic.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\X_Power\X_Power_Condition.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Y_Power\Y_Power.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Y_Power\Y_Power_Basic.cs" />
+    <Compile Include="Lib_Card\ADT8940A1\OutPut\Y_Power\Y_Power_Condition.cs" />
+    <Compile Include="Lib_Card\Base\Card.cs" />
+    <Compile Include="Lib_Card\CardObject.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_ActionCheck.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_AddWater.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_Aspirate.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_CloseLid.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_Decompress.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_Dispense.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_Home.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_MoveToPosition.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_OpenLid.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_PHAspirate.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_PHDrain.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_PutDryCloth.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_PutLid.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_PutWetCloth.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_RelativeMove.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_ReleaseNeedle.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_Reset.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_RobotArmRelease.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_RobotHandGrasping.cs" />
     <Compile Include="My_ADT8940A1\ADT8940A1_SemiAutoHelper.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_SupportCover.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_TakeDryCloth.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_TakeLid.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_TakeWetCloth.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_UVAspirate.cs" />
+    <Compile Include="My_ADT8940A1\ADT8940A1_WashSyringe.cs" />
     <Compile Include="My_AutomaticModule\BottleAddWaterDebug.cs" />
     <Compile Include="My_AutomaticModule\BottleABSRobotTask.cs" />
     <Compile Include="My_AutomaticModule\BottleCorrectionRobotTask.cs" />
@@ -129,9 +223,19 @@
     <Compile Include="My_AutomaticModule\DropBatchManager.cs" />
     <Compile Include="My_AutomaticModule\DropRobotTask.cs" />
     <Compile Include="My_AutomaticModule\WaterCorrectionRobotTask.cs" />
+    <Compile Include="My_Balance\METTLER.cs" />
+    <Compile Include="My_Balance\SerialPortBase.cs" />
+    <Compile Include="My_Balance\SHINKO.cs" />
     <Compile Include="My_ConPar\Area\Layout_4.cs" />
     <Compile Include="My_ConPar\Correction.cs" />
+    <Compile Include="My_ConPar\Spectrometer\Desktop.cs" />
     <Compile Include="My_ConPar\WashCup.cs" />
+    <Compile Include="My_Control\CtColor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="My_Control\CtColor.Designer.cs">
+      <DependentUpon>CtColor.cs</DependentUpon>
+    </Compile>
     <Compile Include="My_Control\CtDoubleBufferedFlowLayoutPanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -165,6 +269,7 @@
     <Compile Include="My_ConPar\Hardware.cs" />
     <Compile Include="My_ConPar\Type\BaseMotion.cs" />
     <Compile Include="My_ConPar\Type\PLC\Motion.cs" />
+    <Compile Include="My_ERPInteraction\ERPInsert.cs" />
     <Compile Include="My_File\CupTempRecorder.cs" />
     <Compile Include="My_Cup\FC_12.cs" />
     <Compile Include="My_Cup\FC_6.cs" />
@@ -215,6 +320,24 @@
     </Compile>
     <Compile Include="My_Form\MachineDebugging\LidLayout.Designer.cs">
       <DependentUpon>LidLayout.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Spectrometer\MeasureTheSampleData.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Spectrometer\MeasureTheSampleData.Designer.cs">
+      <DependentUpon>MeasureTheSampleData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Spectrometer\Spectrometer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Spectrometer\Spectrometer.Designer.cs">
+      <DependentUpon>Spectrometer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="My_Form\Spectrometer\StandardSampleData.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My_Form\Spectrometer\StandardSampleData.Designer.cs">
+      <DependentUpon>StandardSampleData.cs</DependentUpon>
     </Compile>
     <Compile Include="My_Interaction\ProtocolItem.cs" />
     <Compile Include="My_CuttingMachine\WEINVIEW_RTU.cs" />
@@ -481,8 +604,6 @@
     <Compile Include="My_Tool\CupAuxiliary.cs" />
     <Compile Include="My_Tool\FindDyeingCode.cs" />
     <Compile Include="My_Tool\HistoryBackupHelper.cs" />
-    <Compile Include="My_ADT8940A1\Cadt8940a1m.cs" />
-    <Compile Include="My_ADT8940A1\Card.cs" />
     <Compile Include="My_ConPar\AbortInfo.cs" />
     <Compile Include="My_ConPar\Area\Balance\Balance.cs" />
     <Compile Include="My_ConPar\Area\Base.cs" />
@@ -764,6 +885,9 @@
     <EmbeddedResource Include="My_Control\CtBottle.resx">
       <DependentUpon>CtBottle.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="My_Control\CtColor.resx">
+      <DependentUpon>CtColor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="My_Control\CtCup.resx">
       <DependentUpon>CtCup.cs</DependentUpon>
     </EmbeddedResource>
@@ -965,6 +1089,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="My_Form\Login\SplashForm.resx">
       <DependentUpon>SplashForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Spectrometer\MeasureTheSampleData.resx">
+      <DependentUpon>MeasureTheSampleData.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Spectrometer\Spectrometer.resx">
+      <DependentUpon>Spectrometer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My_Form\Spectrometer\StandardSampleData.resx">
+      <DependentUpon>StandardSampleData.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My_Form\UVMan\UVMan.resx">
       <DependentUpon>UVMan.cs</DependentUpon>

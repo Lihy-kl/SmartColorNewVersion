@@ -49,6 +49,14 @@ namespace SmartColor.My_ConPar
         public static  int CuttingMachine { get; set; } = 1;
 
         /// <summary>
+        /// 分光仪类型
+        /// 0：无
+        /// 1：台式分光仪
+        /// </summary>
+        [Description("分光仪类型 |0：无  1：台式分光仪")]
+        public static int Spectrometer{ get; set; } = 0;
+
+        /// <summary>
         /// 是否开启日志
         /// 0：不开启
         /// 1：开启

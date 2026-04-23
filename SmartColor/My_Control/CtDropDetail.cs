@@ -41,6 +41,7 @@ namespace SmartColor.My_Control
         private const int ObjDropCol = 8;
         private const int RealDropCol = 9;
         private const int ManualBottleCol = 10;
+        private CtFormulaBrowse formulaBrowse = null;
         private CtDropHead _dropHead = null;
         private CtDataGridView _dgvDatail = null;
         private int _mode = 0;
@@ -533,6 +534,14 @@ namespace SmartColor.My_Control
             this._dropHead.BathRatioChanged += Dgv_BathRatioChangedHandler;
         }
 
+        public void BindFormulaBrowse(CtFormulaBrowse h)
+        {
+            this.formulaBrowse = h;
+
+        }
+
+
+
         private void FillGropDetail(DataTable dataTable)
         {
             Logger.Info("CtDropDetail 填充配方组合明细。");
@@ -591,8 +600,8 @@ namespace SmartColor.My_Control
                     string code = dr[My_DataBase.DYEING_CODE.Code].ToString();
                     int no = Convert.ToInt16(dr[My_DataBase.DYEING_CODE.IndexNum]);
                     (string formulaCode, string versionNum) = GetHeadFormulaInfo();
-
-                    double BathRatio = 0;
+                    (double bathRatio, double clothWeight, double totalWeight) = GetHeadValues();
+                    double BathRatio = bathRatio;
                     DataTable data = null;
                     if (!string.IsNullOrEmpty(versionNum))
                     {
@@ -602,21 +611,26 @@ namespace SmartColor.My_Control
                             $"{My_DataBase.FORMULA_HEAD.VersionNum} = '{versionNum.Replace("'", "''")}'");
                         if (headRows != null && headRows.Rows.Count > 0)
                         {
-                            string handleBRList = headRows.Rows[0][
-                                My_DataBase.FORMULA_HEAD.HandleBRList].ToString();
-                            if (!string.IsNullOrEmpty(handleBRList))
+                            var dyeCode = headRows.Rows[0][My_DataBase.FORMULA_HEAD.DyeingCode].ToString();
+                            if (dyeCode == code)
                             {
-                                string[] strings = handleBRList.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                                if (strings != null && strings.Length > i)
-                                    BathRatio = Convert.ToDouble(strings[i]);
-                            }
 
-                            var detailRows = SqlServer.Select(My_DataBase.FORMULA_HANDLE_DETAILS.TableName,
-                                null,
-                                $"{My_DataBase.FORMULA_HANDLE_DETAILS.FormulaCode} = '{formulaCode.Replace("'", "''")}' AND {My_DataBase.FORMULA_HANDLE_DETAILS.VersionNum} = '{versionNum.Replace("'", "''")}' AND {My_DataBase.FORMULA_HANDLE_DETAILS.No} = {no}",
-                                My_DataBase.FORMULA_HANDLE_DETAILS.TechnologyName,
-                                true);
-                            data = detailRows;
+                                string handleBRList = headRows.Rows[0][
+                                    My_DataBase.FORMULA_HEAD.HandleBRList].ToString();
+                                if (!string.IsNullOrEmpty(handleBRList))
+                                {
+                                    string[] strings = handleBRList.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                                    if (strings != null && strings.Length > i)
+                                        BathRatio = Convert.ToDouble(strings[i]);
+                                }
+
+                                var detailRows = SqlServer.Select(My_DataBase.FORMULA_HANDLE_DETAILS.TableName,
+                                    null,
+                                    $"{My_DataBase.FORMULA_HANDLE_DETAILS.FormulaCode} = '{formulaCode.Replace("'", "''")}' AND {My_DataBase.FORMULA_HANDLE_DETAILS.VersionNum} = '{versionNum.Replace("'", "''")}' AND {My_DataBase.FORMULA_HANDLE_DETAILS.No} = {no}",
+                                    My_DataBase.FORMULA_HANDLE_DETAILS.TechnologyName,
+                                    true);
+                                data = detailRows;
+                            }
                         }
                         else
                         {
@@ -625,33 +639,39 @@ namespace SmartColor.My_Control
                                 $"{My_DataBase.FORMULA_HEAD_TEMP.FormulaCode} = '{formulaCode.Replace("'", "''")}' AND {My_DataBase.FORMULA_HEAD_TEMP.VersionNum} = '{versionNum.Replace("'", "''")}'");
                             if (headRows != null && headRows.Rows.Count > 0)
                             {
-                                string handleBRList = headRows.Rows[0][My_DataBase.FORMULA_HEAD_TEMP.HandleBRList].ToString();
-                                if (!string.IsNullOrEmpty(handleBRList))
+                                var dyeCode = headRows.Rows[0][My_DataBase.FORMULA_HEAD.DyeingCode].ToString();
+                                if (dyeCode == code)
                                 {
-                                    string[] strings = handleBRList.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                                    if (strings != null && strings.Length > i)
-                                        BathRatio = Convert.ToDouble(strings[i]);
+                                    string handleBRList = headRows.Rows[0][My_DataBase.FORMULA_HEAD_TEMP.HandleBRList].ToString();
+                                    if (!string.IsNullOrEmpty(handleBRList))
+                                    {
+                                        string[] strings = handleBRList.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                                        if (strings != null && strings.Length > i)
+                                            BathRatio = Convert.ToDouble(strings[i]);
+                                    }
+
+
+                                    var detailRows = SqlServer.Select(My_DataBase.FORMULA_HANDLE_DETAILS.TableName,
+                                     null,
+                                     $"{My_DataBase.FORMULA_HANDLE_DETAILS.FormulaCode} = '{formulaCode.Replace("'", "''")}' AND {My_DataBase.FORMULA_HANDLE_DETAILS.VersionNum} = '{versionNum.Replace("'", "''")}' AND {My_DataBase.FORMULA_HANDLE_DETAILS.No} = {no}",
+                                     My_DataBase.FORMULA_HANDLE_DETAILS.TechnologyName,
+                                     true);
+                                    data = detailRows;
                                 }
-
-
-                                var detailRows = SqlServer.Select(My_DataBase.FORMULA_HANDLE_DETAILS.TableName,
-                                 null,
-                                 $"{My_DataBase.FORMULA_HANDLE_DETAILS.FormulaCode} = '{formulaCode.Replace("'", "''")}' AND {My_DataBase.FORMULA_HANDLE_DETAILS.VersionNum} = '{versionNum.Replace("'", "''")}' AND {My_DataBase.FORMULA_HANDLE_DETAILS.No} = {no}",
-                                 My_DataBase.FORMULA_HANDLE_DETAILS.TechnologyName,
-                                 true);
-                                data = detailRows;
-
 
 
                             }
                         }
                     }
-                    else
+                    if (data == null)
                     {
                         var bat = this._dropHead.GetAllInputValues();
                         if (bat != null)
                             BathRatio = Convert.ToDouble(bat["txt_BathRatio"]);
                     }
+
+
+
 
                     newDyeing.FillControlsFromDataTable(type, code, BathRatio, data, dyeInfo);
 
@@ -784,7 +804,7 @@ namespace SmartColor.My_Control
             int lowestBottleNum = -1;
             double lowestSettingConc = 0, lowestRealConc = 0;
 
-            
+
             if (bottleRows != null && bottleRows.Length > 0)
             {
                 foreach (var bRow in bottleRows)
@@ -2078,12 +2098,12 @@ namespace SmartColor.My_Control
                 return result;
 
             var rows = dt.Select($"{DYEING_CODE.DyeingCode} = '{dyeingCode.Replace("'", "''")}'", "IndexNum ASC");
-            if(rows.Length ==0)
+            if (rows.Length == 0)
             {
                 dt = SmartColor.My_DataBase.DyeingCodeData.History_Dyeing_code;
                 rows = dt.Select($"{HISTORY_DYEING_CODE.DyeingCode} = '{dyeingCode.Replace("'", "''")}'", "IndexNum ASC");
             }
-               
+
             foreach (var row in rows)
             {
                 var code = row[DYEING_CODE.Code]?.ToString()?.Trim() ?? "";
@@ -2613,8 +2633,36 @@ namespace SmartColor.My_Control
         private void btn_BatchAdd_Click(object sender, EventArgs e)
         {
 
+            string formulaCode = string.Empty;
+            string versionNum = string.Empty;
+            (formulaCode, versionNum) = GetHeadFormulaInfo();
+            List<(string FormulaCode, string VersionNum)> needAddBatch = new List<(string, string)>();
+            needAddBatch.Add((formulaCode, versionNum));
+            if (this.formulaBrowse != null)
+            {
+                var selectedBatch = this.formulaBrowse.GetSelectedFormulaCodes();
+                if (selectedBatch != null && selectedBatch.Count > 0)
+                {
+                    needAddBatch.Clear();
+                    needAddBatch.AddRange(selectedBatch);
+                }
+            }
 
-            var (formulaCode, versionNum) = GetHeadFormulaInfo();
+            foreach (var batch in needAddBatch)
+            {
+                AddBatch(batch.FormulaCode, batch.VersionNum);
+            }
+
+
+            BatchChange?.Invoke(this, 0);
+
+            Logger.Info("批次添加成功。");
+        }
+
+
+        private void AddBatch(string formulaCode, string versionNum)
+        {
+
             if (string.IsNullOrWhiteSpace(formulaCode))
             {
                 My_File.LocalTranslator.ShowMessage("配方代码不能为空！", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -2630,19 +2678,24 @@ namespace SmartColor.My_Control
                 $"{FieldFormulaCode} = '{formulaCode.Replace("'", "''")}' AND {FieldVersionNum} = '{versionNum.Replace("'", "''")}'");
             if (headRows == null || headRows.Rows.Count == 0)
             {
-                My_File.LocalTranslator.ShowMessage("未找到对应配方表头数据！", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                headRows = SqlServer.Select(FORMULA_HEAD_TEMP.TableName,
+            $"{FORMULA_HEAD_TEMP.FormulaCode} = '{formulaCode.Replace("'", "''")}' AND {FORMULA_HEAD_TEMP.VersionNum} = '{versionNum.Replace("'", "''")}'");
+                if (headRows == null || headRows.Rows.Count == 0)
+                {
+                    My_File.LocalTranslator.ShowMessage("未找到对应配方表头数据！", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
             }
 
             // 获取配方类型（滴液/后处理）
-            var headValues = _dropHead.GetAllInputValues();
-            int formulaType = string.IsNullOrEmpty(headValues["txt_DyeingCode"]?.ToString()) ? 0 : 1;
+
+            int formulaType = string.IsNullOrEmpty(headRows.Rows[0][FORMULA_HEAD.DyeingCode]?.ToString()) ? 0 : 1;
 
 
             // 杯号处理
             int cupNum = 0;
             int parsedCupNum = 0;
-            int.TryParse(headValues["txt_CupNum"]?.ToString(), out parsedCupNum);
+            int.TryParse(headRows.Rows[0][FORMULA_HEAD.CupNum]?.ToString(), out parsedCupNum);
             if (parsedCupNum > 0) cupNum = parsedCupNum;
 
             int? assignedCupNum = GetAvailableCupNum(formulaCode, versionNum, cupNum, formulaType);
@@ -2703,8 +2756,8 @@ namespace SmartColor.My_Control
             if (_dropMode == Mode.DYE)
             {
                 SqlServer.Delete(My_DataBase.DYE_DETAILS.TableName, $"{DYE_DETAILS.CupNum} = {assignedCupNum}");
-                var head = this._dropHead.GetAllInputValues();
-                string code = head["txt_DyeingCode"]?.ToString() ?? "";
+                var head = headRows.Rows[0];
+                string code = head[FORMULA_HEAD.DyeingCode]?.ToString() ?? "";
                 var detailList = FindDyeingCode.GetAllDyeDetailFromFormulaCode(code, formulaCode, Convert.ToInt32(versionNum));
                 foreach (var dict in detailList)
                 {
@@ -2724,9 +2777,6 @@ namespace SmartColor.My_Control
 
 
             }
-            BatchChange?.Invoke(this, assignedCupNum == null ? 0 : Convert.ToInt32(assignedCupNum));
-
-            Logger.Info("批次添加成功。");
         }
 
         /// <summary>
@@ -2738,7 +2788,23 @@ namespace SmartColor.My_Control
             int type = formulaType == 0 ? 2 : 3;
 
             // 获取当前染固色代码
-            string currentDyeingCode = GetHeadDyeCode();
+            string currentDyeingCode = string.Empty;
+            var headValues = SqlServer.Select(TableFormulaHeadName, $"{FieldFormulaCode} = '{formulaCode}' AND {FieldVersionNum} = '{versionNum}'");
+            if (headValues != null && headValues.Rows.Count > 0)
+            {
+                currentDyeingCode = headValues.Rows[0][FORMULA_HEAD.DyeingCode]?.ToString() ?? "";
+            }
+            else
+            {
+                headValues = SqlServer.Select(FORMULA_HEAD_TEMP.TableName, $"{FORMULA_HEAD_TEMP.FormulaCode} = '{formulaCode}' AND {FORMULA_HEAD_TEMP.VersionNum} = '{versionNum}'");
+                if (headValues != null && headValues.Rows.Count > 0)
+                {
+                    currentDyeingCode = headValues.Rows[0][FORMULA_HEAD_TEMP.DyeingCode]?.ToString() ?? "";
+                }
+            }
+
+
+
             // 1. 客户指定杯号
             if (cupNum.HasValue && cupNum.Value > 0)
             {

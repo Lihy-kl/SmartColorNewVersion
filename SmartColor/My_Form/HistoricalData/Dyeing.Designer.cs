@@ -39,8 +39,6 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.btn_Save = new System.Windows.Forms.Button();
-            this.Btn_Measurement = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.panel5 = new System.Windows.Forms.Panel();
@@ -76,7 +74,7 @@
             this.ctDropDetail1.Name = "ctDropDetail1";
             this.ctDropDetail1.Size = new System.Drawing.Size(1260, 450);
             this.ctDropDetail1.TabIndex = 1;
-           
+            this.ctDropDetail1.UseStrictDropMinWeight = false;
             // 
             // ctDataGridView1
             // 
@@ -142,8 +140,6 @@
             // 
             this.panel2.Controls.Add(this.textBox2);
             this.panel2.Controls.Add(this.label2);
-            this.panel2.Controls.Add(this.btn_Save);
-            this.panel2.Controls.Add(this.Btn_Measurement);
             this.panel2.Controls.Add(this.textBox1);
             this.panel2.Controls.Add(this.label1);
             this.panel2.Controls.Add(this.panel5);
@@ -155,9 +151,9 @@
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(561, 181);
+            this.textBox2.Location = new System.Drawing.Point(558, 181);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(396, 29);
+            this.textBox2.Size = new System.Drawing.Size(696, 29);
             this.textBox2.TabIndex = 6;
             // 
             // label2
@@ -168,25 +164,6 @@
             this.label2.Size = new System.Drawing.Size(66, 19);
             this.label2.TabIndex = 5;
             this.label2.Text = "结果：";
-            // 
-            // btn_Save
-            // 
-            this.btn_Save.Location = new System.Drawing.Point(1138, 179);
-            this.btn_Save.Name = "btn_Save";
-            this.btn_Save.Size = new System.Drawing.Size(109, 32);
-            this.btn_Save.TabIndex = 4;
-            this.btn_Save.Text = "保存";
-            this.btn_Save.UseVisualStyleBackColor = true;
-            this.btn_Save.Click += new System.EventHandler(this.Btn_Save_Click);
-            // 
-            // Btn_Measurement
-            // 
-            this.Btn_Measurement.Location = new System.Drawing.Point(1023, 179);
-            this.Btn_Measurement.Name = "Btn_Measurement";
-            this.Btn_Measurement.Size = new System.Drawing.Size(109, 32);
-            this.Btn_Measurement.TabIndex = 3;
-            this.Btn_Measurement.Text = "测量光谱";
-            this.Btn_Measurement.UseVisualStyleBackColor = true;
             // 
             // textBox1
             // 
@@ -279,13 +256,11 @@
         private My_Control.CtDropHead ctDropHead1;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button Btn_Measurement;
         private My_Control.CtDataGridView ctDataGridView1;
         private System.Windows.Forms.Panel panel7;
         private System.Windows.Forms.Panel panel6;
         private My_Control.CtTemperatureChart ctTemperatureChart1;
         private My_Control.CtHistoryDyeBrowse ctDropHistoryHead1;
-        private System.Windows.Forms.Button btn_Save;
         private My_Control.CtLabColorWheelPanel ctLabColorWheelPanel1;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Label label2;

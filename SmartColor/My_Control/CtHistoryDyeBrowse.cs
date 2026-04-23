@@ -39,6 +39,7 @@ namespace SmartColor.My_Control
             this.SetControlsEnabled();
 
             this.ctRecord1.dgv.RowPrePaint += this.Dgv_RowPrePaint_Custom;
+            this.ctRecord1.dgv.ContextMenuStrip = this.contextMenuStrip1;
         }
 
         private void InitRecordEvents()
@@ -820,6 +821,30 @@ namespace SmartColor.My_Control
         public void Reload()
         {
             RefreshData();
+        }
+
+        private void MiSpectrometer_Click(object sender, EventArgs e)
+        {
+            if (ctRecord1.dgv.CurrentCell == null)
+            {
+                My_File.LocalTranslator.ShowMessage("请先选择一行数据！", "温馨提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            var row = ctRecord1.dgv.CurrentRow;
+            if (row != null)
+            {
+                var formulaCode = row.Cells[1].Value?.ToString() ?? "";
+                var versionNum = row.Cells[2].Value?.ToString() ?? "";
+                var id = row.Cells[5].Value?.ToString() ?? "";
+                using (var fmr = new SmartColor.My_Form.Spectrometer.Spectrometer(formulaCode, versionNum, int.Parse(id)))
+                {
+                    fmr.ShowDialog();
+                }
+            }
+            else
+            {
+                My_File.LocalTranslator.ShowMessage("请先选择一行数据！", "温馨提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
     }
 }

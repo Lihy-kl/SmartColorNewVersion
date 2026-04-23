@@ -37,7 +37,7 @@ namespace SmartColor.My_SemiAutoModule
                             _instance = new PLCSemiAutoHelperAdapter();
                             break;
                         case 1: // ADT8940A1控制系统
-                           // _instance = new ADT8940A1SemiAutoHelperAdapter();
+                            _instance = new ADT8940A1SemiAutoHelperAdapter();
                             break;
                         default:
                             throw new System.NotSupportedException("不支持的机台类型");

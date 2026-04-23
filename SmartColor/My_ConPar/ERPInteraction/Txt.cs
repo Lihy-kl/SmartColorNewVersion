@@ -25,6 +25,12 @@ namespace SmartColor.My_ConPar.ERPInteraction
 
         #region 表头
         /// <summary>
+        /// 表头总长度
+        /// </summary>
+        [Description("表头总长度")]
+        public int Head_Total { get; set; } = 86;
+
+        /// <summary>
         /// 表头开始识别码开始位置
         /// </summary>
         [Description("表头开始识别码开始位置")]
@@ -231,6 +237,12 @@ namespace SmartColor.My_ConPar.ERPInteraction
         #endregion
 
         #region 详情
+
+        /// <summary>
+        /// 表详情总长度
+        /// </summary>
+        [Description("表详情总长度")]
+        public int Detail_Total { get; set; } = 41;
 
         /// <summary>
         /// 详情开始识别码开始位置

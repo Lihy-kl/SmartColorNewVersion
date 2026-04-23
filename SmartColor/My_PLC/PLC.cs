@@ -56,6 +56,9 @@ namespace SmartColor.My_PLC
         /// <summary> UV锁对象，确保同一时间只有一个操作访问对应设备</summary>
         private static readonly object _uvLock = new object();
 
+        private static readonly Dictionary<SemiAutomaticOperation, SemaphoreSlim> _operationSemaphores = new Dictionary<SemiAutomaticOperation, SemaphoreSlim>();
+        private static readonly object _semaphoreLock = new object();
+
 
         // 新增：读线程和信号
         private Thread _readWorker = null;
@@ -832,7 +835,7 @@ namespace SmartColor.My_PLC
                                 if (regsReadBack[i] != regsToWrite[i])
                                 {
                                     writeSuccess = false;
-                                    Logger.Error($"第{retryCount}次校验失败：地址{startAddr + i}，写入值={regsToWrite[i]}, 读取值={regsReadBack[i]}");
+                                  //  Logger.Error($"第{retryCount}次校验失败：地址{startAddr + i}，写入值={regsToWrite[i]}, 读取值={regsReadBack[i]}");
                                     break;
                                 }
                             }
@@ -872,6 +875,21 @@ namespace SmartColor.My_PLC
             }
         }
 
+        private SemaphoreSlim GetOperationSemaphore(SemiAutomaticOperation op)
+        {
+            // 只为每种硬件分配一个信号量
+            object key = GetOperationLock(op);
+            lock (_semaphoreLock)
+            {
+                if (!_operationSemaphores.TryGetValue(op, out var sem))
+                {
+                    sem = new SemaphoreSlim(1, 1);
+                    _operationSemaphores[op] = sem;
+                }
+                return sem;
+            }
+        }
+
         /// <summary>
         /// 异步执行半自动动作：
         /// 1. 先将动作参数批量写入PLC
@@ -885,203 +903,210 @@ namespace SmartColor.My_PLC
         /// <returns>Task，完成时返回PLC的实际结果码（2为成功，其他为各自错误码）</returns>
         public Task<int> ExecuteSemiAutomaticOperationAsync(PLC_SemiAutoParamBase param, int runningCode = 1)
         {
+            var op = (SemiAutomaticOperation)Convert.ToInt32(param.OperationType.Value);
+            var opSemaphore = GetOperationSemaphore(op);
+
             return Task.Run(async () =>
             {
-                var op = (SemiAutomaticOperation)Convert.ToInt32(param.OperationType.Value);
-                var opLock = GetOperationLock(op);
+
 
                 int resultCode = -1;
                 bool isLoopSpeakActive = false;
 
                 // 只锁定硬件相关的串行部分
 
-                lock (opLock)
+                await opSemaphore.WaitAsync();
+
+                try
                 {
-                    try
+                    // 新增：检查PLC是否处于运行中
+                    bool show = false;
+                    while (true)
                     {
-                        // 新增：检查PLC是否处于运行中
-                        bool show = false;
-                        while (true)
+                        Thread.Sleep(10);
+                        if (Convert.ToInt32(_Receive.RobotActionCode.Value) == 1 && !show)
                         {
-                            Thread.Sleep(10);
-                            if (Convert.ToInt32(_Receive.RobotActionCode.Value) == 1 && !show)
-                            {
-                                show = true;
-                                Logger.Error("PLC正在执行动作，禁止重复下发半自动操作参数。");
+                            show = true;
+                            Logger.Error("PLC正在执行动作，禁止重复下发半自动操作参数。");
 
-                            }
-                            else
-                            {
-                                break; // PLC不在运行中，继续执行写入
-                            }
-
-                        }
-
-
-                        if (Convert.ToInt32(_Receive.RobotActionCode.Value) != 0)
-                        {
-                            _plcTcp.WriteSingleRegister(1, (ushort)_Receive.RobotActionCode.Address, 0);
-                            while (true)
-                            {
-                                Thread.Sleep(10);
-                                int code = Convert.ToInt32(_Receive.RobotActionCode.Value);
-                                if (code == 0)
-                                    break;
-                            }
-                        }
-                        // 参数批量写入PLC（入队，同步执行）
-                        EnqueueSemiAutomaticOperation(param);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error("等待半自动动作完成异常", ex);
-                    }
-                }
-
-
-                // 日志与气泡提示（不阻塞主流程）
-                string s = GetSemiAutomaticOperationName(op);
-                Logger.Info($"半自动动作发送，名称:{s}");
-                ShowState?.Invoke(s);
-                int lastAlarmCode = -1;
-                bool isAlarmDialogActive = false;
-                bool needSleepAfterInquire = false;
-                while (true)
-                {
-                    await Task.Delay(5); // 减少CPU占用
-
-                    int code = Convert.ToInt32(_Receive.RobotActionCode.Value);
-
-                    // --- 光幕遮挡语音播报逻辑 ---
-                    if (code >= 34 && code <= 37)
-                    {
-                        if (!isLoopSpeakActive)
-                        {
-                            var alarm = RobotAlarmOverview.GetAlarmInfo(code);
-                            // 只在首次进入时触发
-                            _ = Task.Run(() => MessageEventManager.Instance.RequestLoopSpeak("光幕遮挡", alarm.Description));
-                            isLoopSpeakActive = true;
-                        }
-                    }
-                    else
-                    {
-                        if (isLoopSpeakActive)
-                        {
-                            _ = Task.Run(() => MessageEventManager.Instance.RequestStopLoopSpeak("光幕遮挡"));
-                            isLoopSpeakActive = false;
-                        }
-                    }
-                    // --- 结束新增 ---
-
-                    if (code != runningCode && code != 0)
-                    {
-                        resultCode = code;
-                        if (code >= 10000)
-                        {
-                            var alarm = RobotAlarmOverview.GetAlarmInfo(resultCode);
-                            var tcs = new TaskCompletionSource<bool>();
-                            if (code == 12401 || code == 12701)
-                            {
-                                _ = Task.Run(() =>
-                                {
-                                    MessageEventManager.Instance.RequestShowMessage(
-                                        "温馨提示",
-                                        alarm.Description + ",需要人工确认：请先点击确认键，10秒后将自动开启抓手，请准备手动接住针筒/杯盖",
-                                        btn =>
-                                        {
-                                            My_ConPar.Object.CurrentPLC.EnqueueInquire(btn == "确认" ? PLC.Inquire.Continue : PLC.Inquire.Continue);
-                                            needSleepAfterInquire = true;
-                                            tcs.SetResult(true);
-                                        },
-                                        new[] { "确认" }
-                                       
-                                    );
-                                });
-                                await tcs.Task;
-                                if (needSleepAfterInquire)
-                                {
-                                    await Task.Delay(10000);
-                                    needSleepAfterInquire = false;
-                                }
-                            }
-                            else
-                            {
-                                if (!isAlarmDialogActive || code != lastAlarmCode)
-                                {
-                                    isAlarmDialogActive = true;
-                                    lastAlarmCode = code;
-                                    _ = Task.Run(() =>
-                                        {
-                                            MessageEventManager.Instance.RequestShowMessage(
-                                                "温馨提示",
-                                                alarm.Description + ",气压或传感器故障。请在完成修复后，点击“继续”以恢复正常运行。如需中止流程，请点击“退出”",
-                                                btn =>
-                                                {
-                                                    My_ConPar.Object.CurrentPLC.EnqueueInquire(btn == "继续" ? PLC.Inquire.Continue : PLC.Inquire.Exit);
-
-                                                    tcs.SetResult(true);
-                                                },
-                                                new[] { "继续", "退出" },
-                                                "继续"
-                                            );
-                                        });
-                                    await tcs.Task;
-                                }
-                                else
-                                {
-                                    // 已弹窗，等待用户操作
-                                    await Task.Delay(100);
-                                }
-                                while (true)
-                                {
-                                    int code1 = Convert.ToInt32(_Receive.RobotActionCode.Value);
-                                    if (code != code1)
-                                    {
-                                        isAlarmDialogActive = false; // 报警码变化后允许再次弹窗
-                                        break;
-                                    }
-                                    Thread.Sleep(100);
-                                }
-                            }
-                            continue; // 继续等待动作完成
-                        }
-                        else if (code >= 34 && code <= 37)
-                        {
-                            continue;
                         }
                         else
                         {
-                            // 增加重试机制，最多重试10次
-                            int retry = 0;
-                            while (true)
-                            {
-                                bool writeSuccess = _plcTcp.WriteSingleRegister(1, (ushort)_Receive.RobotActionCode.Address, 0);
-                                Logger.Info($"清零RobotActionCode，写入PLC，第{retry + 1}次，结果:{writeSuccess}");
-                                await Task.Delay(10);
-                                code = Convert.ToInt32(_Receive.RobotActionCode.Value);
-                                if (code == 0)
-                                    break;
-                                retry++;
-                                if (retry >= 10)
-                                {
-                                    Logger.Error("清零RobotActionCode多次失败，退出重试");
-                                    break;
-                                }
-                            }
-                            Logger.Info($"半自动动作结束，RobotActionCode={code}，已清零");
-                            ShowState?.Invoke((code == 2 || code == 0) ? "待机" : $"{s}异常");
+                            break; // PLC不在运行中，继续执行写入
                         }
-                        break;
-                    }
-                }
 
-                // --- 结束时确保停止语音播报 ---
-                if (isLoopSpeakActive)
-                {
-                    _ = Task.Run(() => MessageEventManager.Instance.RequestStopLoopSpeak("光幕遮挡"));
-                    isLoopSpeakActive = false;
+                    }
+
+
+                    if (Convert.ToInt32(_Receive.RobotActionCode.Value) != 0)
+                    {
+                        _plcTcp.WriteSingleRegister(1, (ushort)_Receive.RobotActionCode.Address, 0);
+                        while (true)
+                        {
+                            Thread.Sleep(10);
+                            int code = Convert.ToInt32(_Receive.RobotActionCode.Value);
+                            if (code == 0)
+                                break;
+                        }
+                    }
+                    // 参数批量写入PLC（入队，同步执行）
+                    EnqueueSemiAutomaticOperation(param);
+
+
+
+
+                    // 日志与气泡提示（不阻塞主流程）
+                    string s = GetSemiAutomaticOperationName(op);
+                    Logger.Info($"半自动动作发送，名称:{s}");
+                    ShowState?.Invoke(s);
+                    int lastAlarmCode = -1;
+                    bool isAlarmDialogActive = false;
+                    bool needSleepAfterInquire = false;
+                    while (true)
+                    {
+                        await Task.Delay(5); // 减少CPU占用
+
+                        int code = Convert.ToInt32(_Receive.RobotActionCode.Value);
+
+                        // --- 光幕遮挡语音播报逻辑 ---
+                        if (code >= 34 && code <= 37)
+                        {
+                            if (!isLoopSpeakActive)
+                            {
+                                var alarm = RobotAlarmOverview.GetAlarmInfo(code);
+                                // 只在首次进入时触发
+                                _ = Task.Run(() => MessageEventManager.Instance.RequestLoopSpeak("光幕遮挡", alarm.Description));
+                                isLoopSpeakActive = true;
+                            }
+                        }
+                        else
+                        {
+                            if (isLoopSpeakActive)
+                            {
+                                _ = Task.Run(() => MessageEventManager.Instance.RequestStopLoopSpeak("光幕遮挡"));
+                                isLoopSpeakActive = false;
+                            }
+                        }
+                        // --- 结束新增 ---
+
+                        if (code != runningCode && code != 0)
+                        {
+                            resultCode = code;
+                            if (code >= 10000)
+                            {
+                                var alarm = RobotAlarmOverview.GetAlarmInfo(resultCode);
+                                var tcs = new TaskCompletionSource<bool>();
+                                if (code == 12401 || code == 12701)
+                                {
+                                    _ = Task.Run(() =>
+                                    {
+                                        MessageEventManager.Instance.RequestShowMessage(
+                                            "温馨提示",
+                                            alarm.Description + ",需要人工确认：请先点击确认键，10秒后将自动开启抓手，请准备手动接住针筒/杯盖",
+                                            btn =>
+                                            {
+                                                My_ConPar.Object.CurrentPLC.EnqueueInquire(btn == "确认" ? PLC.Inquire.Continue : PLC.Inquire.Continue);
+                                                needSleepAfterInquire = true;
+                                                tcs.SetResult(true);
+                                            },
+                                            new[] { "确认" }
+
+                                        );
+                                    });
+                                    await tcs.Task;
+                                    if (needSleepAfterInquire)
+                                    {
+                                        await Task.Delay(10000);
+                                        needSleepAfterInquire = false;
+                                    }
+                                }
+                                else
+                                {
+                                    if (!isAlarmDialogActive || code != lastAlarmCode)
+                                    {
+                                        isAlarmDialogActive = true;
+                                        lastAlarmCode = code;
+                                        _ = Task.Run(() =>
+                                            {
+                                                MessageEventManager.Instance.RequestShowMessage(
+                                                    "温馨提示",
+                                                    alarm.Description + ",气压或传感器故障。请在完成修复后，点击“继续”以恢复正常运行。如需中止流程，请点击“退出”",
+                                                    btn =>
+                                                    {
+                                                        My_ConPar.Object.CurrentPLC.EnqueueInquire(btn == "继续" ? PLC.Inquire.Continue : PLC.Inquire.Exit);
+
+                                                        tcs.SetResult(true);
+                                                    },
+                                                    new[] { "继续", "退出" },
+                                                    "继续"
+                                                );
+                                            });
+                                        await tcs.Task;
+                                    }
+                                    else
+                                    {
+                                        // 已弹窗，等待用户操作
+                                        await Task.Delay(100);
+                                    }
+                                    while (true)
+                                    {
+                                        int code1 = Convert.ToInt32(_Receive.RobotActionCode.Value);
+                                        if (code != code1)
+                                        {
+                                            isAlarmDialogActive = false; // 报警码变化后允许再次弹窗
+                                            break;
+                                        }
+                                        Thread.Sleep(100);
+                                    }
+                                }
+                                continue; // 继续等待动作完成
+                            }
+                            else if (code >= 34 && code <= 37)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                // 增加重试机制，最多重试10次
+                                int retry = 0;
+                                while (true)
+                                {
+                                    bool writeSuccess = _plcTcp.WriteSingleRegister(1, (ushort)_Receive.RobotActionCode.Address, 0);
+                                    Logger.Info($"清零RobotActionCode，写入PLC，第{retry + 1}次，结果:{writeSuccess}");
+                                    await Task.Delay(10);
+                                    code = Convert.ToInt32(_Receive.RobotActionCode.Value);
+                                    if (code == 0)
+                                        break;
+                                    retry++;
+                                    if (retry >= 10)
+                                    {
+                                        Logger.Error("清零RobotActionCode多次失败，退出重试");
+                                        break;
+                                    }
+                                }
+                                Logger.Info($"半自动动作结束，RobotActionCode={code}，已清零");
+                                ShowState?.Invoke((code == 2 || code == 0) ? "待机" : $"{s}异常");
+                            }
+                            break;
+                        }
+                    }
+
+                    // --- 结束时确保停止语音播报 ---
+                    if (isLoopSpeakActive)
+                    {
+                        _ = Task.Run(() => MessageEventManager.Instance.RequestStopLoopSpeak("光幕遮挡"));
+                        isLoopSpeakActive = false;
+                    }
+                    // --- 结束 ---
                 }
-                // --- 结束 ---
+                catch (Exception ex)
+                {
+                    Logger.Error("等待半自动动作完成异常", ex);
+                }
+                finally
+                {
+                    opSemaphore.Release();
+                }
 
                 return resultCode;
             });

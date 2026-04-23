@@ -28,14 +28,14 @@ namespace SmartColor.My_PLC
         /// <param name="takeHeight">取瓶高度（0=气缸下、1=气缸到阻挡位）</param>
         public PLC_TakeMotherBottleParam(
             int z,
-            short smallSyringeSpeed,
-            short smallSyringeAcc,
+            int smallSyringeSpeed,
+            int smallSyringeAcc,
             short takeHeight)
             : base(PLC.SemiAutomaticOperation.TakeMotherBottle)
         {
             Z = new ProtocolItem(801, typeof(int), z);
-            SmallSyringeSpeed = new ProtocolItem(803, typeof(short), smallSyringeSpeed);
-            SmallSyringeAcc = new ProtocolItem(805, typeof(short), smallSyringeAcc);
+            SmallSyringeSpeed = new ProtocolItem(803, typeof(int), smallSyringeSpeed);
+            SmallSyringeAcc = new ProtocolItem(805, typeof(int), smallSyringeAcc);
             TakeHeight = new ProtocolItem(807, typeof(short), takeHeight);
         }
 
@@ -49,8 +49,8 @@ namespace SmartColor.My_PLC
         {
             var motion = My_ConPar.Object.CurrentMotion as My_ConPar.Type.PLC.Motion;
             Z = new ProtocolItem(801, typeof(int), z);
-            SmallSyringeSpeed = new ProtocolItem(803, typeof(short), motion?.Move_S_HSpeed ?? 0);
-            SmallSyringeAcc = new ProtocolItem(805, typeof(short), (short)((motion?.Move_S_USpeed ?? 500) * 10));
+            SmallSyringeSpeed = new ProtocolItem(803, typeof(int), motion?.Move_S_HSpeed ?? 0);
+            SmallSyringeAcc = new ProtocolItem(805, typeof(int), (motion?.Move_S_USpeed ?? 500) * 10);
             TakeHeight = new ProtocolItem(807, typeof(short), takeHeight);
         }
     }

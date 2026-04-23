@@ -148,19 +148,19 @@ namespace SmartColor.My_ConPar
         /// 开夹放布脉冲
         /// </summary>
         [Description("开夹放布脉冲|p")]
-        public static  int OpenPulse { get; set; } = 10500;
+        public static  int OpenPulse { get; set; } = 8500;
 
         /// <summary>
         /// 备布区下探开夹脉冲
         /// </summary>
         [Description("备布区下探开夹脉冲|p")]
-        public static  int ClothDownPulse { get; set; } = 8000;
+        public static  int ClothDownPulse { get; set; } = 7000;
 
         /// <summary>
         /// 染杯口下探开夹脉冲
         /// </summary>
         [Description("染杯口下探开夹脉冲|p")]
-        public static  int CupDownPulse { get; set; } = 9500;
+        public static  int CupDownPulse { get; set; } = 8500;
 
         /// <summary>
         /// 出布区放布时气缸位置 0阻挡位 1慢速中
@@ -275,7 +275,7 @@ namespace SmartColor.My_ConPar
         /// </summary>
         [Description("气缸下位置|mm")]
       
-        public static int CylinderDownPosition { get; set; } = 350;
+        public static int CylinderDownPosition { get; set; } = 453;
 
         /// <summary>
         /// 气缸定位范围 |mm
@@ -283,6 +283,18 @@ namespace SmartColor.My_ConPar
         [Description("气缸定位范围|mm")]
 
         public static int CylinderPositioningRange { get; set; } = 15;
+
+        /// <summary>
+        /// 板卡版是否使用实际位置
+        /// </summary>
+        [Description("板块版是否使用实际位置")]
+        public static int ActualPosition { get; set; } = 1;
+
+        /// <summary>
+        /// 抽液时是否先升气缸 0：边升边反推  1：反推完再升气缸
+        /// </summary>
+        [Description("抽液时是否先升气缸| 0：边升边反推  1：反推完再升气缸")]
+        public static int Push { get; set; } = 0;
 
 
 

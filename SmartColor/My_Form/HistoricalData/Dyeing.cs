@@ -109,51 +109,16 @@ namespace SmartColor.My_Form.HistoricalData
             var endTimeStr = head.Rows[0][My_DataBase.HISTORY_HEAD.FinishTime]?.ToString();
             var dyeingCode = head.Rows[0][My_DataBase.HISTORY_HEAD.DyeingCode]?.ToString();
 
+            if (DateTime.TryParse(startTimeStr, out var startTime) && DateTime.TryParse(endTimeStr, out var endTime))
+            {
+                var duration = endTime - startTime;
+                return duration.ToString(@"hh\:mm\:ss");
+            }
             if (string.IsNullOrWhiteSpace(dyeingCode))
             {
-                // 单纯滴液
-                if (DateTime.TryParse(startTimeStr, out var startTime) && DateTime.TryParse(endTimeStr, out var endTime))
-                {
-                    var duration = endTime - startTime;
-                    return duration.ToString(@"hh\:mm\:ss");
-                }
                 this.ctTemperatureChart1.ContextMenuStrip = null;
             }
-            else
-            {
-                // 有染固色工艺
-                var batchNum = head.Rows[0][My_DataBase.HISTORY_HEAD.BatchName]?.ToString();
-                var cup = head.Rows[0][My_DataBase.HISTORY_HEAD.CupNum]?.ToString();
 
-                // 只查一次，过滤掉StartTime和FinishTime为NULL的数据，按StartTime升序排序
-                var dt = SqlServer.Select(
-                    My_DataBase.HISTORY_DYE.TableName,
-                    new[] { "*" }, // 查询所有字段
-                    $"{My_DataBase.HISTORY_DYE.BatchName} = '{batchNum}' AND {My_DataBase.HISTORY_DYE.CupNum} = {cup} " +
-                    $"AND {My_DataBase.HISTORY_DYE.StartTime} IS NOT NULL AND {My_DataBase.HISTORY_DYE.FinishTime} IS NOT NULL",
-                    My_DataBase.HISTORY_DYE.StartTime, // 排序字段
-                    true // 升序
-                );
-
-                if (dt != null && dt.Rows.Count > 0)
-                {
-                    // 第一行是最早的开始时间，最后一行是最晚的完成时间
-                    var firstRow = dt.Rows[0];
-                    var lastRow = dt.Rows[dt.Rows.Count - 1];
-
-                    startTimeStr = firstRow[My_DataBase.HISTORY_DYE.StartTime]?.ToString();
-                    endTimeStr = lastRow[My_DataBase.HISTORY_DYE.FinishTime]?.ToString();
-                    _startTime = Convert.ToDateTime(startTimeStr);
-
-                    this.ctTemperatureChart1.ContextMenuStrip = this.ctTemperatureChart1.contextMenuStrip1;
-
-                    if (DateTime.TryParse(startTimeStr, out var startTime) && DateTime.TryParse(endTimeStr, out var endTime))
-                    {
-                        var duration = endTime - startTime;
-                        return duration.ToString(@"hh\:mm\:ss");
-                    }
-                }
-            }
 
             return "00:00:00";
         }

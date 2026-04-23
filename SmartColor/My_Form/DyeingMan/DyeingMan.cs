@@ -101,6 +101,7 @@ namespace SmartColor.My_Form.DyeingMan
         private void DyeingMan_Load(object sender, EventArgs e)
         {
             this.ctDropDetail1.BindDropHead(ctDropHead1);
+            this.ctDropDetail1.BindFormulaBrowse(ctFormulaBrowse1);
             this.ctDropDetail1.SetButtonEnabled();
             this.ctFormulaBrowse1.HeadTarget = ctDropHead1;
             this.ctBatchData1.HeadTarget = ctDropHead1;

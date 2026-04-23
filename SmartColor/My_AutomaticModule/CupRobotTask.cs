@@ -1059,7 +1059,7 @@ namespace SmartColor.My_AutomaticModule
                 int purgeCount = lastUseTime.AddHours(evacuateSpan) > DateTime.Now ? 0 : My_ConPar.Other.DrainCount;
 
                 // 2.1. 发送开始加药通知HMI
-               // var ctCup = await CupCommManager.Instance.FindCupByCupNumAsync(cupNo);
+                // var ctCup = await CupCommManager.Instance.FindCupByCupNumAsync(cupNo);
                 //if (ctCup.LockStatus != 1)
                 //{
                 var cupArea = CupCommManager.Instance.FindCupAreaByCupNum(cupNo);
@@ -2476,10 +2476,19 @@ namespace SmartColor.My_AutomaticModule
 
                     if (headID == 0 || stepNo == 0)
                     {
-                        result.Code = My_Tool.Result.ResultCode.Exception;
-                        result.Message = $"{cno}杯未找到配方或步号";
-                        result.Exception = new Exception($"{cno}杯未找到配方或步号");
-                        return result;
+
+                        var (mainInfo1, subInfo1) = My_Tool.CupAuxiliary.GetMSCupInfo(cno);
+                        var useInfo = mainInfo1.CupNum == cno ? mainInfo1 : subInfo1;
+                        headID = useInfo.HeadID ?? 0;
+                        stepNo = int.TryParse(useInfo.StepNum, out int sn) ? sn : 0;
+
+                        if (headID == 0 || stepNo == 0)
+                        {
+                            result.Code = My_Tool.Result.ResultCode.Exception;
+                            result.Message = $"{cno}杯未找到配方或步号";
+                            result.Exception = new Exception($"{cno}杯未找到配方或步号");
+                            return result;
+                        }
                     }
                     if (clothPos == 0)
                     {

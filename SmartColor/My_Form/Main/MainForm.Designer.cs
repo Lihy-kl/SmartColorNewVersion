@@ -79,6 +79,7 @@
             this.MiUseAutoWashSyringe = new System.Windows.Forms.ToolStripMenuItem();
             this.MiUseAutoUpdateCupCoor = new System.Windows.Forms.ToolStripMenuItem();
             this.MiUseLimit = new System.Windows.Forms.ToolStripMenuItem();
+            this.MIUseHighLiftAspiration = new System.Windows.Forms.ToolStripMenuItem();
             this.MiERPInteraction = new System.Windows.Forms.ToolStripMenuItem();
             this.MiCuttingMachine = new System.Windows.Forms.ToolStripMenuItem();
             this.MiPowderMachine = new System.Windows.Forms.ToolStripMenuItem();
@@ -116,7 +117,7 @@
             this.ctTaskQueuePanel1 = new SmartColor.My_Control.CtTaskQueuePanel();
             this.ctTab1 = new SmartColor.My_Control.CtTab();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.MIUseHighLiftAspiration = new System.Windows.Forms.ToolStripMenuItem();
+            this.MiSpectrometer = new System.Windows.Forms.ToolStripMenuItem();
             this.TsMain.SuspendLayout();
             this.ctTab1.SuspendLayout();
             this.SuspendLayout();
@@ -297,7 +298,8 @@
             this.MiPowderMachine,
             this.MiWeighingMachine,
             this.MiDatabase,
-            this.MiOrder});
+            this.MiOrder,
+            this.MiSpectrometer});
             this.toolStripSplitButton6.Font = new System.Drawing.Font("Microsoft YaHei UI", 12F);
             this.toolStripSplitButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripSplitButton6.Name = "toolStripSplitButton6";
@@ -544,6 +546,12 @@
             this.MiUseLimit.Name = "MiUseLimit";
             this.MiUseLimit.Size = new System.Drawing.Size(288, 26);
             this.MiUseLimit.Text = "启动助剂限值功能";
+            // 
+            // MIUseHighLiftAspiration
+            // 
+            this.MIUseHighLiftAspiration.Name = "MIUseHighLiftAspiration";
+            this.MIUseHighLiftAspiration.Size = new System.Drawing.Size(288, 26);
+            this.MIUseHighLiftAspiration.Text = "启动拉高抽液功能";
             // 
             // MiERPInteraction
             // 
@@ -848,11 +856,12 @@
             this.tabPage1.Text = "首页";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // MIUseHighLiftAspiration
+            // MiSpectrometer
             // 
-            this.MIUseHighLiftAspiration.Name = "MIUseHighLiftAspiration";
-            this.MIUseHighLiftAspiration.Size = new System.Drawing.Size(288, 26);
-            this.MIUseHighLiftAspiration.Text = "启动拉高抽液功能";
+            this.MiSpectrometer.Name = "MiSpectrometer";
+            this.MiSpectrometer.Size = new System.Drawing.Size(192, 26);
+            this.MiSpectrometer.Text = "分光仪参数配置";
+            this.MiSpectrometer.Click += new System.EventHandler(this.MiSpectrometer_Click);
             // 
             // MainForm
             // 
@@ -968,5 +977,6 @@
         private System.Windows.Forms.ToolStripMenuItem MiUseAutoUpdateCupCoor;
         private System.Windows.Forms.ToolStripMenuItem MiUseLimit;
         private System.Windows.Forms.ToolStripMenuItem MIUseHighLiftAspiration;
+        private System.Windows.Forms.ToolStripMenuItem MiSpectrometer;
     }
 }

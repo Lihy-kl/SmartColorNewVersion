@@ -332,6 +332,28 @@ namespace SmartColor.My_Control
         /// <returns>交互对象</returns>
         public FlowLayoutPanel AddInteraction(string title, string content, Action<string> onResult, params string[] buttons)
         {
+            // 判断是否已存在相同 title 和 content 的行，存在则直接返回
+            foreach (FlowLayoutPanel row in _panel.Controls)
+            {
+                Label titleLabel = null;
+                Label contentLabel = null;
+                int labelCount = 0;
+                foreach (Control c in row.Controls)
+                {
+                    if (c is Label lbl)
+                    {
+                        if (labelCount == 0) titleLabel = lbl;
+                        else if (labelCount == 1) contentLabel = lbl;
+                        labelCount++;
+                    }
+                }
+                if (titleLabel != null && contentLabel != null &&
+                    titleLabel.Text == title && contentLabel.Text == content)
+                {
+                    return row; // 已存在，直接返回
+                }
+            }
+
             var rowPanel = CreateInteractionRow(title, content, onResult, buttons);
             _panel.Controls.Add(rowPanel);
             UpdateToggleButton();

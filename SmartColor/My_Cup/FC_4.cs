@@ -273,6 +273,11 @@ namespace SmartColor.My_Cup
         private List<int> _retrying = new List<int>();
 
         /// <summary>
+        /// 需要停止并下线的杯号
+        /// </summary>
+        private List<int> _needStop = new List<int>();
+
+        /// <summary>
         /// 构造函数，初始化ModbusTCP通讯实例和协议区
         /// </summary>
         /// <param name="ip">服务器IP</param>
@@ -985,12 +990,12 @@ namespace SmartColor.My_Cup
                     await SmartColor.My_AutomaticModule.CupRobotTask.EnqueueStirAsync(cupNo, dyeType);
                     break;
                 case "取小样":
-                        await SmartColor.My_AutomaticModule.CupRobotTask.EnqueueSampleAsync(cupNo, dyeType);
-                        break;
+                    await SmartColor.My_AutomaticModule.CupRobotTask.EnqueueSampleAsync(cupNo, dyeType);
+                    break;
 
                 case "测PH":
-                        await SmartColor.My_AutomaticModule.CupRobotTask.EnqueuePHAsync(cupNo, dyeType);
-                        break;
+                    await SmartColor.My_AutomaticModule.CupRobotTask.EnqueuePHAsync(cupNo, dyeType);
+                    break;
 
                 case "加A":
                 case "加B":
@@ -1025,160 +1030,168 @@ namespace SmartColor.My_Cup
                 this.WriteSingleProtocolItem(zone.AllFinish);
             }
 
-                try
+            try
+            {
+
+                var (mainInfo, subInfo) = CupAuxiliary.GetMSCupInfo(cupNo);
+
+                // 5. 重置杯完成信号
+                int group = mainInfo.CupNum - this._startCupNo;
+
+                FC_4_Send_Param send = this._send[group].Param;
+
+
+                ResetSendParamToZero(send);
+
+                var useName = My_Tool.CupAuxiliary.GetIsUseing(cupNo);
+                var dt = DateTime.Now;
+                _ = RunTableMan.InsertAsync(new Dictionary<string, object>
                 {
+                    [SmartColor.My_DataBase.RUN_TABLE.Dail] = $"{useName}号杯收到完成信号"
+                }, dt);
 
-                    var (mainInfo, subInfo) = CupAuxiliary.GetMSCupInfo(cupNo);
+                while (true)
+                {
+                    bool mainOk = false;
+                    (mainInfo, subInfo) = CupAuxiliary.GetMSCupInfo(cupNo);
 
-                    // 5. 重置杯完成信号
-                    int group = mainInfo.CupNum - this._startCupNo;
-
-                    FC_4_Send_Param send = this._send[group].Param;
-
-
-                    ResetSendParamToZero(send);
-
-                    var useName = My_Tool.CupAuxiliary.GetIsUseing(cupNo);
-                    var dt = DateTime.Now;
-                    _ = RunTableMan.InsertAsync(new Dictionary<string, object>
+                    if (mainInfo.Enable == 1)
                     {
-                        [SmartColor.My_DataBase.RUN_TABLE.Dail] = $"{useName}号杯收到完成信号"
-                    }, dt);
-
-                    while (true)
-                    {
-                        bool mainOk = false;
-                        (mainInfo, subInfo) = CupAuxiliary.GetMSCupInfo(cupNo);
-
-                        if (mainInfo.Enable == 1)
-                        {
-                            if (mainInfo.Statues == "待机")
-                                mainOk = true;
-
-
-                        }
-                        else
-                        {
+                        if (mainInfo.Statues == "待机")
                             mainOk = true;
-                        }
 
-
-                        if (mainOk)
-                            break;
-
-                        Thread.Sleep(500);
-                       
 
                     }
-
-                    var msCups = My_Tool.CupAuxiliary.GetIsUseing(cupNo);
-
-                    // 1. 获取主副杯详细信息
-                    int mainCup = mainInfo.CupNum;
-
-
-                    // 1. 取消任务中心关于该杯的所有等待中的任务
-                    var allTasks = SmartColor.My_RobotManager.RobotTaskManager.Instance.GetAllTasksSnapshot();
-                    foreach (var taskObj in allTasks)
+                    else
                     {
-                        // 只处理业务任务
-                        var type = taskObj.GetType();
-                        var taskNameProp = type.GetProperty("TaskName");
-                        if (taskNameProp != null)
+                        mainOk = true;
+                    }
+
+
+                    if (mainOk)
+                        break;
+
+                    Thread.Sleep(500);
+
+
+                }
+
+                var msCups = My_Tool.CupAuxiliary.GetIsUseing(cupNo);
+
+                // 1. 获取主副杯详细信息
+                int mainCup = mainInfo.CupNum;
+
+
+                // 1. 取消任务中心关于该杯的所有等待中的任务
+                var allTasks = SmartColor.My_RobotManager.RobotTaskManager.Instance.GetAllTasksSnapshot();
+                foreach (var taskObj in allTasks)
+                {
+                    // 只处理业务任务
+                    var type = taskObj.GetType();
+                    var taskNameProp = type.GetProperty("TaskName");
+                    if (taskNameProp != null)
+                    {
+                        string taskName = taskNameProp.GetValue(taskObj) as string;
+                        if (!string.IsNullOrEmpty(taskName) && taskName.EndsWith($"-{msCups}"))
                         {
-                            string taskName = taskNameProp.GetValue(taskObj) as string;
-                            if (!string.IsNullOrEmpty(taskName) && taskName.Contains(msCups))
-                            {
-                                SmartColor.My_RobotManager.RobotTaskManager.Instance.CancelTask(taskObj);
-                            }
+                            SmartColor.My_RobotManager.RobotTaskManager.Instance.CancelTask(taskObj);
                         }
                     }
+                }
 
-                    // 2. 删除该杯的所有播报
-                    string[] speakKeys = new string[]
-                    {
+                // 2. 删除该杯的所有播报
+                string[] speakKeys = new string[]
+                {
                         $"{mainCup}号配液杯入布",
                         $"{mainCup}号配液杯出布",
                         $"{mainCup}号配液杯取小样",
                         $"{mainCup}号配液杯测PH",
 
-                    };
-                    foreach (var key in speakKeys)
+                };
+                foreach (var key in speakKeys)
+                {
+                    SmartColor.My_Tool.MessageEventManager.Instance.RequestStopLoopSpeak(key);
+                }
+
+                // 2. 染固色代码
+                string mainDyeingCode = mainInfo.DyeingCode;
+                string subDyeingCode = subInfo.DyeingCode;
+
+                // 3. 判断是否为洗杯工艺
+                bool mainIsWash = !string.IsNullOrEmpty(mainDyeingCode) && CupAuxiliary.WashCupDic.ContainsKey(mainDyeingCode) || mainDyeingCode == null;
+
+
+                ushort cupSelect = 0;
+                if (mainInfo.IsUsing == 1)
+                {
+                    //停止温度记录
+                    var recorder = SmartColor.My_File.CupTempRecorder.Get(mainInfo.CupNum);
+                    recorder.SetCylinderComm(this);
+                    recorder.StopRecord();
+
+
+                    if (!mainIsWash)
                     {
-                        SmartColor.My_Tool.MessageEventManager.Instance.RequestStopLoopSpeak(key);
-                    }
-
-                    // 2. 染固色代码
-                    string mainDyeingCode = mainInfo.DyeingCode;
-                    string subDyeingCode = subInfo.DyeingCode;
-
-                    // 3. 判断是否为洗杯工艺
-                    bool mainIsWash = !string.IsNullOrEmpty(mainDyeingCode) && CupAuxiliary.WashCupDic.ContainsKey(mainDyeingCode) || mainDyeingCode == null;
-
-
-                    ushort cupSelect = 0;
-                    if (mainInfo.IsUsing == 1)
-                    {
-                        //停止温度记录
-                        var recorder = SmartColor.My_File.CupTempRecorder.Get(mainInfo.CupNum);
-                        recorder.SetCylinderComm(this);
-                        recorder.StopRecord();
-
-
-                        if (!mainIsWash)
+                        if (this._retrying.Contains(mainCup))
                         {
                             if (this._retrying.Contains(mainCup))
-                            {
-                                if (this._retrying.Contains(mainCup))
-                                    this._retrying.Remove(mainCup);
+                                this._retrying.Remove(mainCup);
 
-                            }
-                            else
-                            {
-                                CupAuxiliary.CupFinish(mainCup, cupSelect);
-                            }
                         }
                         else
                         {
-                            CupAuxiliary.ResetCupDetails(mainInfo.CupNum);
 
-                            if ((mainIsWash && mainInfo.DyeingCode != My_Tool.CupAuxiliary.PreWashCupType))
-                                UpdateWaitList(mainCup);
+                            CupAuxiliary.CupFinish(mainCup, cupSelect, !this._needStop.Contains(mainCup));
+
 
                         }
-
                     }
-
                     else
                     {
-                        if (mainInfo.Enable == 1)
+                        CupAuxiliary.ResetCupDetails(mainInfo.CupNum);
+
+                        if ((mainIsWash && mainInfo.DyeingCode != My_Tool.CupAuxiliary.PreWashCupType))
                         {
-                            CupAuxiliary.ResetCupDetails(mainInfo.CupNum);
-                            UpdateWaitList(cupNo);
+                            if (!this._needStop.Contains(mainCup))
+                                UpdateWaitList(mainCup, true);
                         }
 
 
-
                     }
 
-
-                }
-                catch (Exception ex)
-                {
-                    var useName = My_Tool.CupAuxiliary.GetIsUseing(cupNo);
-                    Logger.Error($"AllFinishProcess: {useName}号杯完成处理异常", ex);
                 }
 
-                finally
+                else
                 {
-                    lock (this._zoneLock)
+                    if (mainInfo.Enable == 1)
                     {
-
-                        this.WriteSingleProtocolItem(zone.AllFinish);
+                        CupAuxiliary.ResetCupDetails(mainInfo.CupNum);
+                        if (!this._needStop.Contains(mainCup))
+                            UpdateWaitList(cupNo, true);
                     }
-                    ResetAllSignalHandlers(cupNo);
+
+
+
                 }
-          
+
+
+            }
+            catch (Exception ex)
+            {
+                var useName = My_Tool.CupAuxiliary.GetIsUseing(cupNo);
+                Logger.Error($"AllFinishProcess: {useName}号杯完成处理异常", ex);
+            }
+
+            finally
+            {
+                lock (this._zoneLock)
+                {
+
+                    this.WriteSingleProtocolItem(zone.AllFinish);
+                }
+                ResetAllSignalHandlers(cupNo);
+            }
+
 
 
         }
@@ -1299,7 +1312,7 @@ namespace SmartColor.My_Cup
                 int group = mainInfo.CupNum - this._startCupNo;
 
                 Logger.Error($"{mainInfo.CupNum}号杯收到重启信号");
-                if (mainInfo.IsUsing == 1 )
+                if (mainInfo.IsUsing == 1)
                 {
                     lock (this._zoneLock)
                     {
@@ -1307,7 +1320,7 @@ namespace SmartColor.My_Cup
                         WriteSingleProtocolItem(this._send[group].Base.StartStopReady, (ushort)this._send[group].Base.StartStopReady.Value);
                     }
 
-                    var useinfo =  mainInfo;
+                    var useinfo = mainInfo;
                     if (useinfo.Statues == "滴液")
                     {
                     }
@@ -1436,7 +1449,7 @@ namespace SmartColor.My_Cup
                         zone.DrainageDown.SetValue(regs[17]);
                         zone.SafeOpeningTemp.SetValue(regs[18]);
                         zone.Reserved3.SetValue(regs[19]);
-                       _= ReceiveDataProcess(onlyRead, zone, i);
+                        _ = ReceiveDataProcess(onlyRead, zone, i);
                     }
                 }
 
@@ -1813,7 +1826,7 @@ namespace SmartColor.My_Cup
 
         public async Task<DyeingResult> DyeingStartAsync(int cupNum, int cupChoice)
         {
-            return await Task.Run(() =>
+            return await Task.Run(async () =>
             {
                 var result = new DyeingResult { CupNo = cupNum };
                 try
@@ -1822,6 +1835,37 @@ namespace SmartColor.My_Cup
 
                     // 1. 获取主副杯详细信息（优先主杯）
                     var (mainInfo, subInfo) = CupAuxiliary.GetMSCupInfo(cupNum);
+
+
+
+
+
+
+
+
+                    FC_4_Receive_Zone zone = this._receiveAll.GetZoneFromCupNo(cupNum, this._startCupNo);
+
+                    var mainOk = true;
+
+                    if (mainInfo.IsUsing == 1)
+                    {
+                        var states1 = Convert.ToUInt16(zone.CurrentStatus.Value);
+                        if (states1 != 0 && states1 != 5)
+                            mainOk = false;
+                    }
+
+
+
+                    if (!mainOk)
+                    {
+                        result.Code = My_Tool.Result.ResultCode.Success;
+                        result.Message = $"杯号{cupNum}已经启动，禁止重复启动";
+                        return result;
+                    }
+
+
+
+
 
                     var info = mainInfo;
 
@@ -1861,8 +1905,7 @@ namespace SmartColor.My_Cup
 
                     int totalStepNum = SqlServer.Select(DYE_DETAILS.TableName, $"{DYE_DETAILS.CupNum} = '{cupNum}'").Rows.Count;
 
-
-                    // 3. 同步cup_details表步号 并启动温度记录
+                    // 2. 同步cup_details表步号 并启动温度记录
                     var updateDict = new Dictionary<string, object>
                     {
                         { CUP_DETAILS.StartTime, DateTime.Now },
@@ -1878,6 +1921,7 @@ namespace SmartColor.My_Cup
                     string where = $"{CUP_DETAILS.CupNum}=@CupNum";
                     var whereParam = new SqlParameter("@CupNum", mainInfo.CupNum);
                     My_DataBase.SqlServer.Update(CUP_DETAILS.TableName, updateDict, where, whereParam);
+
                     var area = CupCommManager.Instance.FindCupAreaByCupNum(mainInfo.CupNum);
                     if (area != null)
                     {
@@ -1888,17 +1932,50 @@ namespace SmartColor.My_Cup
                     recorder.SetCylinderComm(this);
                     recorder.StartRecord();
 
-                    // 2. 填充发送区
-                    int sendIdx = cupNum - this._startCupNo;
-                    var send = this._send[sendIdx];
-                    lock (this._zoneLock)
-                    {
-                        send.Base.StartStopReady?.SetValue(1);
-                        FillProcessNameToCodes(dyeingCode, send.Base);
 
-                        send.Base.TotalStepNum?.SetValue(totalStepNum);
-                        ResetSendParamToZero(send.Param);
-                        WriteToHMI(send.Base);
+
+
+                    int waitMs = 0;
+                    const int maxWaitMs = 60000;
+                    const int pollInterval = 500;
+                    while (waitMs < maxWaitMs)
+                    {
+                        // 3. 填充发送区
+                        int sendIdx = (cupNum - this._startCupNo);
+                        var send = this._send[sendIdx];
+                        lock (this._zoneLock)
+                        {
+                            send.Base.StartStopReady?.SetValue(1);
+                            FillProcessNameToCodes(dyeingCode, send.Base);
+
+                            send.Base.TotalStepNum?.SetValue(totalStepNum);
+                            ResetSendParamToZero(send.Param);
+                            WriteToHMI(send.Base);
+                        }
+
+                        bool sucess = false;
+                        for (int i = 0; i < 5; i++)
+                        {
+                            await Task.Delay(pollInterval); // 短暂等待，确保HMI处理指令
+                            waitMs += pollInterval;                        // 直接用zone里的最新值
+                            ushort waitCurrentStatus = Convert.ToUInt16(zone.CurrentStatus.Value);
+
+
+                            if (waitCurrentStatus == 1) // 1=运行中
+                            {
+                                sucess = true;
+                                result.Code = My_Tool.Result.ResultCode.Success;
+                                result.Message = "染色命令下发成功，HMI已进入染色状态";
+                                break;
+                            }
+
+
+                        }
+                        if (sucess) break;
+                    }
+                    if (waitMs >= maxWaitMs)
+                    {
+                        throw new Exception($"{cupNum}号配液杯下发染色命令后等待HMI进入染色状态超时");
                     }
 
 
@@ -1908,10 +1985,11 @@ namespace SmartColor.My_Cup
                     result.Message = $"{cupNum}号杯染色启动完成";
 
                     // 6. 记录日志
+                    var useName = My_Tool.CupAuxiliary.GetIsUseing(cupNum);
                     var dt = DateTime.Now;
                     _ = RunTableMan.InsertAsync(new Dictionary<string, object>
                     {
-                        [SmartColor.My_DataBase.RUN_TABLE.Dail] = $"{cupNum}号杯启动染固色指令"
+                        [SmartColor.My_DataBase.RUN_TABLE.Dail] = $"{useName}号杯启动染固色指令"
                     }, dt);
                 }
                 catch (Exception ex)
@@ -2159,7 +2237,7 @@ namespace SmartColor.My_Cup
 
 
                     var mainHaveCloth = Convert.ToUInt16(mainInfo.HaveCloth);
-                    var subHaveCloth = Convert.ToUInt16(subInfo.HaveCloth);
+
 
                     // 当前杯的状态和历史状态
                     ushort currentStatus = mainCurrentStatus;
@@ -2169,7 +2247,6 @@ namespace SmartColor.My_Cup
                     if (currentStatus != 0) // 0=待机
                     {
                         throw new Exception($"当前杯[{cupNum}]状态为[{ConvertCodeToStatues(currentStatus)}]，不能滴液");
-
                     }
 
                     // 4. 判断是否需要前洗杯
@@ -2186,7 +2263,7 @@ namespace SmartColor.My_Cup
                         await SendWashAsync(cupNum, My_Tool.CupAuxiliary.PreWashCupType);
 
                         result.Code = My_Tool.Result.ResultCode.Failure;
-                        result.Message = $"{cupNum}号杯历史状态为1，需前洗杯";
+                        result.Message = $"主/副杯历史状态有滴液，需前洗杯";
                         return result;
 
                     }
@@ -2202,13 +2279,13 @@ namespace SmartColor.My_Cup
 
 
                     int waitMs = 0;
-                    const int maxWaitMs = 10000;
-                    const int pollInterval = 200;
+                    const int maxWaitMs = 60000;
+                    const int pollInterval = 500;
                     while (waitMs < maxWaitMs)
                     {
-                        // 6. 发送滴液命令
                         lock (this._zoneLock)
                         {
+                            // 6. 发送滴液命令
                             send.Base.StartStopReady.SetValue(3); // 3=滴液
                             FillProcessNameToCodes(string.Empty, send.Base);
                             send.Base.TotalStepNum.SetValue(0);
@@ -2217,26 +2294,34 @@ namespace SmartColor.My_Cup
                             WriteToHMI(send.Base);
                         }
 
-                        await Task.Delay(pollInterval);
-                        // 直接用zone里的最新值
-                        ushort waitCurrentStatus = Convert.ToUInt16(zone.CurrentStatus.Value);
-
-                        currentStatus = waitCurrentStatus;
-                        if (currentStatus == 5) // 5=滴液
+                        bool sucess = false;
+                        for (int i = 0; i < 5; i++)
                         {
-                            result.Code = My_Tool.Result.ResultCode.Success;
-                            result.Message = "滴液命令下发成功，HMI已进入滴液状态";
-                            break;
+                            await Task.Delay(pollInterval);
+                            waitMs += pollInterval;
+                            // 直接用zone里的最新值
+                            ushort waitCurrentStatus = Convert.ToUInt16(zone.CurrentStatus.Value);
+
+                            currentStatus = waitCurrentStatus;
+                            if (currentStatus == 5) // 5=滴液
+                            {
+                                sucess = true;
+                                result.Code = My_Tool.Result.ResultCode.Success;
+                                result.Message = "滴液命令下发成功，HMI已进入滴液状态";
+                                break;
+                            }
+
                         }
 
-                        waitMs += pollInterval;
+                        if (sucess)
+                        {
+                            break;
+                        }
                     }
                     if (waitMs >= maxWaitMs)
                     {
                         throw new Exception($"{cupNum}号配液杯下发滴液命令后等待HMI进入滴液状态超时");
                     }
-
-
 
                 }
                 catch (Exception ex)
@@ -2306,33 +2391,35 @@ namespace SmartColor.My_Cup
                 {
                     var (mainCup, subCup) = CupAuxiliary.GetCupPair(cupNum);
                     int group = (mainCup - this._startCupNo);
-                    FC_4_Receive_Zone zone = this._receiveAll.GetZoneFromCupNo(cupNum, this._startCupNo);
-                    var send = this._send[group].Param;
-                    lock (this._zoneLock)
-                    {
-
-
-                        WriteSingleProtocolItem(zone.CupCoverSignal);
-
-
-                        send.AddDrugFinish.SetValue((ushort)3);
-                        WriteSingleProtocolItem(send.AddDrugFinish, (ushort)send.AddDrugFinish.Value);
-
-                    }
-
-
                     _ = RunTableMan.InsertAsync(new Dictionary<string, object>
                     {
                         [SmartColor.My_DataBase.RUN_TABLE.Dail] = $"{cupNum}号杯发送加药启动"
                     }, DateTime.Now);
-
-                    var wr = await My_Tool.CupAuxiliary.WaitLockUpOk(cupNum);
-                    if (!wr)
+                    bool wr = false;
+                    for (int i = 0; i < 5; i++)
                     {
-                        Logger.Error($"等待{cupNum}号杯锁止上信号异常");
-                        return false;
+                        FC_4_Receive_Zone zone = this._receiveAll.GetZoneFromCupNo(cupNum, this._startCupNo);
+                        var send = this._send[group].Param;
+                        lock (this._zoneLock)
+                        {
+                            WriteSingleProtocolItem(zone.CupCoverSignal);
+                            send.AddDrugFinish.SetValue((ushort)3);
+                            WriteSingleProtocolItem(send.AddDrugFinish, (ushort)send.AddDrugFinish.Value);
+                        }
+
+                        wr = await My_Tool.CupAuxiliary.WaitLockUpOk(cupNum);
+                        if (!wr)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
-                    return true;
+
+
+                    return wr ? true : false;
                 }
                 catch (Exception ex)
                 {
@@ -2431,19 +2518,19 @@ namespace SmartColor.My_Cup
 
                 while (waitMs < maxWaitMs)
                 {
-                 
-                        send.CurrentStepNum.SetValue((ushort)stepInfo.StepNum);
-                        send.TechnologyNameNo.SetValue((ushort)ConvertTechnologyNameToCode(stepInfo.TechnologyName));
-                        send.TargetTemp.SetValue((ushort)(stepInfo.Temp * 10));
-                        send.TempRate.SetValue((ushort)(stepInfo.TempSpeed * 10));
-                        send.KeepWarmTime.SetValue((ushort)(stepInfo.SetTime));
-                        send.RotorRate.SetValue((ushort)(stepInfo.RotorSpeed * 10));
-                        send.CurrentLiquidAmount.SetValue((ushort)(CupAuxiliary.ReturnMaxWeight(cupNum) * 100));
-                        send.ConfirmButton.SetValue((ushort)0);
-                        send.AddDrugFinish.SetValue((ushort)0);
-                        send.ReceiveFinish.SetValue((ushort)1);
 
-                        WriteToHMI(send);
+                    send.CurrentStepNum.SetValue((ushort)stepInfo.StepNum);
+                    send.TechnologyNameNo.SetValue((ushort)ConvertTechnologyNameToCode(stepInfo.TechnologyName));
+                    send.TargetTemp.SetValue((ushort)(stepInfo.Temp * 10));
+                    send.TempRate.SetValue((ushort)(stepInfo.TempSpeed * 10));
+                    send.KeepWarmTime.SetValue((ushort)(stepInfo.SetTime));
+                    send.RotorRate.SetValue((ushort)(stepInfo.RotorSpeed * 10));
+                    send.CurrentLiquidAmount.SetValue((ushort)(CupAuxiliary.ReturnMaxWeight(cupNum) * 100));
+                    send.ConfirmButton.SetValue((ushort)0);
+                    send.AddDrugFinish.SetValue((ushort)0);
+                    send.ReceiveFinish.SetValue((ushort)1);
+
+                    WriteToHMI(send);
                     bool sure = false;
                     for (int i = 0; i < 5; i++)
                     {
@@ -2477,14 +2564,14 @@ namespace SmartColor.My_Cup
 
                     }
 
-                    if(sure)
+                    if (sure)
                     {
                         break;
                     }
 
 
 
-                 
+
                 }
 
 
@@ -2522,7 +2609,7 @@ namespace SmartColor.My_Cup
                 // 处理完成后移除cupNo，允许下次处理
                 _waitDataProcessing.TryRemove(cupNum, out _);
 
-              
+
                 // 推荐：复位SignalEdgeHandler的状态
                 _waitDataHandler.Reset(cupNum);
             }
@@ -2555,7 +2642,7 @@ namespace SmartColor.My_Cup
                         [SmartColor.My_DataBase.RUN_TABLE.Dail] = $"{cupNum}号杯启动下线指令"
                     }, dt);
 
-                    CupAuxiliary.ClearBatchCupData(cupNum);
+                  //  CupAuxiliary.ClearBatchCupData(cupNum);
 
 
                 }
@@ -2628,7 +2715,7 @@ namespace SmartColor.My_Cup
                     {
                         area.OnCupDataReceived(cupNum);
                     }
-                    UpdateWaitList(cupNum);
+                    UpdateWaitList(cupNum, true);
                     ResetAllSignalHandlers(cupNum);
                 }
                 catch (Exception ex)
@@ -2711,13 +2798,17 @@ namespace SmartColor.My_Cup
         public async Task SendStopAsync(int cupNum, bool needOffLine = true)
         {
 
-            await Task.Run(async() =>
+            await Task.Run(async () =>
             {
                 try
                 {
                     if (!needOffLine)
                     {
                         this._retrying.Add(cupNum);
+                    }
+                    else
+                    {
+                        this._needStop.Add(cupNum);
                     }
                     int group = (cupNum - this._startCupNo);
                     lock (this._zoneLock)
@@ -2760,7 +2851,7 @@ namespace SmartColor.My_Cup
                         $"{nm}号配液杯取小样",
                         $"{nm}号配液杯测PH"
                     };
-                  
+
                     foreach (var key in speakKeys)
                     {
                         SmartColor.My_Tool.MessageEventManager.Instance.RequestStopLoopSpeak(key);
@@ -2776,37 +2867,41 @@ namespace SmartColor.My_Cup
                     FC_4_Receive_Zone zone = this._receiveAll.GetZoneFromCupNo(cupNum, this._startCupNo);
 
                     var (mainInfo, subInfo) = CupAuxiliary.GetMSCupInfo(cupNum);
-                  
-                        int waitMs = 0;
-                        const int maxWaitMs = 600000; // 最多等待60秒
-                        const int pollInterval = 1000;
-                        while (waitMs < maxWaitMs)
-                        {
-                            (mainInfo, subInfo) = CupAuxiliary.GetMSCupInfo(cupNum);
-                            var status1 = mainInfo.Statues;
-                         
 
-                            // 检查主/副杯是否都已进入停止、待机或下线
-                            bool mainOk = status1 == "待机" || status1 == "下线";
-                         
-
-                            if (mainOk)
-                                break;
-
-                            await Task.Delay(pollInterval);
-                            waitMs += pollInterval;
-
-                        }
+                    int waitMs = 0;
+                    const int maxWaitMs = 600000; // 最多等待60秒
+                    const int pollInterval = 1000;
+                    while (waitMs < maxWaitMs)
+                    {
+                        (mainInfo, subInfo) = CupAuxiliary.GetMSCupInfo(cupNum);
+                        var status1 = mainInfo.Statues;
 
 
-                        // 4. 发送下线指令
-                        if (needOffLine)
-                            await SendOffLine(cupNum, 0);
-                        else
-                        {
-                            My_DataBase.SqlServer.Update(
-                               CUP_DETAILS.TableName,
-                               new Dictionary<string, object> {
+                        // 检查主/副杯是否都已进入停止、待机或下线
+                        bool mainOk = status1 == "待机" || status1 == "下线";
+
+
+                        if (mainOk)
+                            break;
+
+                        await Task.Delay(pollInterval);
+                        waitMs += pollInterval;
+
+                    }
+
+
+                    // 4. 发送下线指令
+                    if (needOffLine)
+                    {
+                        await SendOffLine(cupNum, 0);
+                        this._needStop.Remove(cupNum);
+                    }
+
+                    else
+                    {
+                        My_DataBase.SqlServer.Update(
+                           CUP_DETAILS.TableName,
+                           new Dictionary<string, object> {
                              { CUP_DETAILS.IsUsing,0 },
                             { CUP_DETAILS.CurrentWeight, 0 },
                             { CUP_DETAILS.TotalWeight,0 },
@@ -2825,17 +2920,17 @@ namespace SmartColor.My_Cup
                             { CUP_DETAILS.Fail, 0 },
                             { CUP_DETAILS.HeadID, DBNull.Value },
                             { CUP_DETAILS.CurrentStepFinish,0 }
-                               },
-                               $"{CUP_DETAILS.CupNum} = @cupNo",
-                               new SqlParameter("@cupNo", cupNum)
-                           );
-                            var area = CupCommManager.Instance.FindCupAreaByCupNum(cupNum);
-                            if (area != null)
-                            {
-                                area.OnCupDataReceived(cupNum);
-                            }
+                           },
+                           $"{CUP_DETAILS.CupNum} = @cupNo",
+                           new SqlParameter("@cupNo", cupNum)
+                       );
+                        var area = CupCommManager.Instance.FindCupAreaByCupNum(cupNum);
+                        if (area != null)
+                        {
+                            area.OnCupDataReceived(cupNum);
                         }
-                    
+                    }
+
                 }
                 catch (Exception ex)
                 {

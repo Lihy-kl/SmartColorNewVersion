@@ -115,5 +115,28 @@ namespace SmartColor.My_ConPar
 
         [Description("原点位置|0：1号母液瓶  1：10号母液瓶")]
         public static  int OriginPosition { get; set; } = 1;
+
+        /// <summary>
+        /// 上下气缸类型
+        /// 0：单输出
+        /// 1：双输出
+        /// </summary>
+        [Description("上下气缸类型 |0：单输出  1：双输出")]
+        public static int CylinderType { get; set; } = 1;
+
+        /// <summary>
+        /// 泄压数量
+        /// </summary>
+
+        [Description("泄压数量")]
+        public static int Machine_Decompression { get; set; } = 0;
+
+        /// <summary>
+        /// 抓手气缸类型
+        /// 0：单输出
+        /// 1：双输出
+        /// </summary>
+        [Description("抓手气缸类型 |0：单输出  1：双输出")]
+        public static int TongType { get; set; } = 1;
     }
 }

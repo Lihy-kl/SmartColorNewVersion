@@ -36,9 +36,11 @@ namespace SmartColor.My_Control
             SmartColor.My_Tool.CupAuxiliary.CupFinished += ShowTodayHistory;
             ShowTodayHistory();
             ClearSelect();
+          
+
         }
 
-       
+
 
         /// <summary>
         /// 显示当天的染色历史记录（按FinishTime筛选），并统计成功/失败数量
@@ -174,6 +176,31 @@ namespace SmartColor.My_Control
 
             // 触发外部事件通知
             CurrentRowChanged?.Invoke(this, null);
+        }
+
+        private void MiSpectrometer_Click(object sender, EventArgs e)
+        {
+            if (ctDataGridView1.CurrentCell == null)
+            {
+                My_File.LocalTranslator.ShowMessage("请先选择一行数据！", "温馨提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            var row = ctDataGridView1.CurrentRow;
+            if (row != null)
+            {
+                var formulaCode = row.Cells[0].Value?.ToString() ?? "";
+                var versionNum = row.Cells[1].Value?.ToString() ?? "";
+                var id = row.Cells[6].Value?.ToString() ?? "";
+                using (var fmr = new SmartColor.My_Form.Spectrometer.Spectrometer(formulaCode, versionNum, int.Parse(id)))
+                {
+                    fmr.ShowDialog();
+                }
+            }
+            else
+            {
+                My_File.LocalTranslator.ShowMessage("请先选择一行数据！", "温馨提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
         }
     }
 }

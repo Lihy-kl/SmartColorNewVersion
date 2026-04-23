@@ -90,7 +90,7 @@ namespace SmartColor.My_PLC
                 motion.Move_S_USpeed : motion.Move_B_USpeed);
             ZPurgeUpPulse = new ProtocolItem(807, typeof(int), My_ConPar.Other.Z_UpPulse);
             ZPurgeDownPulse = new ProtocolItem(809, typeof(int), My_ConPar.Other.Z_DownPulse);
-            ZBackPulse = new ProtocolItem(811, typeof(int), My_ConPar.Other.Z_BackPulse);
+            ZBackPulse = new ProtocolItem(811, typeof(int),z == 0 ? 0: My_ConPar.Other.Z_BackPulse);
             ZOffset = new ProtocolItem(813, typeof(int), motion?.Home_Z_Offset ?? 0);
             IgnoreSyringeSensor = new ProtocolItem(815, typeof(short), My_ConPar.Choices.IgnoreSyringeSensor);
             PurgeCount = new ProtocolItem(816, typeof(short), purgeCount);

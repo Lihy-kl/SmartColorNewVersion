@@ -31,17 +31,17 @@ namespace SmartColor.My_PLC
         /// <param name="largeSyringeAcc">大针筒加减速时间</param>
         public PLC_PHDrainParam(
             int z,
-            short smallSyringeSpeed,
-            short smallSyringeAcc,
-            short largeSyringeSpeed,
-            short largeSyringeAcc)
+            int smallSyringeSpeed,
+            int smallSyringeAcc,
+            int largeSyringeSpeed,
+            int largeSyringeAcc)
             : base(PLC.SemiAutomaticOperation.PHDrain)
         {
             Z = new ProtocolItem(801, typeof(int), z);
-            SmallSyringeSpeed = new ProtocolItem(803, typeof(short), smallSyringeSpeed);
-            SmallSyringeAcc = new ProtocolItem(805, typeof(short), smallSyringeAcc);
-            LargeSyringeSpeed = new ProtocolItem(807, typeof(short), largeSyringeSpeed);
-            LargeSyringeAcc = new ProtocolItem(809, typeof(short), largeSyringeAcc);
+            SmallSyringeSpeed = new ProtocolItem(803, typeof(int), smallSyringeSpeed);
+            SmallSyringeAcc = new ProtocolItem(805, typeof(int), smallSyringeAcc);
+            LargeSyringeSpeed = new ProtocolItem(807, typeof(int), largeSyringeSpeed);
+            LargeSyringeAcc = new ProtocolItem(809, typeof(int), largeSyringeAcc);
         }
 
         /// <summary>
@@ -54,10 +54,10 @@ namespace SmartColor.My_PLC
         {
             var motion = My_ConPar.Object.CurrentMotion as My_ConPar.Type.PLC.Motion;
             Z = new ProtocolItem(801, typeof(int), z);
-            SmallSyringeSpeed = new ProtocolItem(803, typeof(short), motion?.Move_S_HSpeed ?? 0);
-            SmallSyringeAcc = new ProtocolItem(805, typeof(short), (short)((motion?.Move_S_USpeed ?? 500) * 10));
-            LargeSyringeSpeed = new ProtocolItem(807, typeof(short), motion?.Move_B_HSpeed ?? 0);
-            LargeSyringeAcc = new ProtocolItem(809, typeof(short), (short)((motion?.Move_B_USpeed ?? 500) * 10));
+            SmallSyringeSpeed = new ProtocolItem(803, typeof(int), motion?.Move_S_HSpeed ?? 0);
+            SmallSyringeAcc = new ProtocolItem(805, typeof(int), (motion?.Move_S_USpeed ?? 500) * 10);
+            LargeSyringeSpeed = new ProtocolItem(807, typeof(int), motion?.Move_B_HSpeed ?? 0);
+            LargeSyringeAcc = new ProtocolItem(809, typeof(int), (motion?.Move_B_USpeed ?? 500) * 10);
         }
     }
 }

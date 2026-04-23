@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
+using SmartColor.My_ADT8940A1;
 
 namespace SmartColor.My_Form.Main
 {
@@ -68,6 +69,11 @@ namespace SmartColor.My_Form.Main
             {
 
                 My_ConPar.Object.CurrentPLC.ShowState += CurrentPLC_ShowState;
+            }
+            else if (My_ConPar.Machine.MachineType == 1)
+            {
+
+                My_ConPar.Object.CurrentADT8940A1.ShowState += CurrentPLC_ShowState;
             }
 
 
@@ -249,6 +255,11 @@ namespace SmartColor.My_Form.Main
             StartUVCommunication();
 
 
+            //判断是否有使用ERP,开启线程
+            if (My_ConPar.Machine.ERPInteraction != 0)
+            {
+                StartERP();
+            }
 
             // 加载Home到首页
             _home = new SmartColor.My_Form.Homepage.Home();
@@ -371,6 +382,9 @@ namespace SmartColor.My_Form.Main
         {
             // 称布机相关
             MiWeighingMachine.Visible = My_ConPar.Machine.UseCloth != 0;
+
+            //分光仪相关
+            MiSpectrometer.Visible = My_ConPar.Machine.Spectrometer != 0;
 
             // 称粉机相关
             MiPowderMachine.Visible = My_ConPar.Machine.UsePowder != 0;
@@ -584,7 +598,12 @@ namespace SmartColor.My_Form.Main
                     case 1:
                         //板卡版机台启动
                         {
-
+                            Task.Run(() =>
+                            {
+                                //天平启动
+                                StartReadBalance();
+                                //读取板卡所有输入输出
+                            });
                         }
                         break;
                     case 2:
@@ -619,6 +638,72 @@ namespace SmartColor.My_Form.Main
                         My_AutomaticModule.CupCommManager.Instance.EnsureCommThread(area);
                 }
             });
+        }
+
+        /// <summary>
+        /// 启动天平读数
+        /// </summary>
+        private void StartReadBalance()
+        {
+            while (true)
+            {
+                Thread.Sleep(1);
+
+                My_ConPar.Object.Balance.WriteAndRead();
+                if (My_ConPar.Object.CurrentBalance.BalanceType == 0)
+                    My_Tool.BalanceStableReading.CurrentRead = Lib_SerialPort.Balance.METTLER.BalanceValue;
+                else
+                    My_Tool.BalanceStableReading.CurrentRead = Lib_SerialPort.Balance.SHINKO.BalanceValue;
+
+                //if (Lib_Card.Configure.Parameter.Machine_BalanceType == 0)
+                //{
+
+
+                //    FADM_Object.Communal.dBalanceValue = Lib_SerialPort.Balance.METTLER.BalanceValue;
+
+                //}
+                //else
+                //{
+                //    FADM_Object.Communal.Shinko.WriteAndRead();
+                //    FADM_Object.Communal.dBalanceValue = Lib_SerialPort.Balance.SHINKO.BalanceValue;
+                //}
+
+            }
+        }
+
+        /// <summary>
+        /// 启动ERP
+        /// </summary>
+        private void StartERP()
+        {
+
+            try
+            {
+                switch (My_ConPar.Machine.ERPInteraction)
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        {
+                            Task.Run(async () =>
+                            {
+                                SmartColor.My_ERPInteraction.ERPInsert eRPInsert = new My_ERPInteraction.ERPInsert();
+                                await eRPInsert.StartReadAsync();
+                            });
+                        }
+                        break;
+
+                    default:
+                        break;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //ShowBtnResetBrew("开料机通讯失败", $"错误信息：{ex.Message}");
+            }
+
         }
 
 
@@ -1416,6 +1501,8 @@ namespace SmartColor.My_Form.Main
             {
                 if (dlg.ShowDialog(this) == DialogResult.OK)
                 {
+                    if (My_ConPar.Machine.MachineType != 0)
+                        return;
                     // 延时参数已保存，写入PLC配置区
                     My_ConPar.Object.CurrentPLC.WriteConParToPLC();
                 }
@@ -1448,6 +1535,8 @@ namespace SmartColor.My_Form.Main
             {
                 if (dlg.ShowDialog(this) == DialogResult.OK)
                 {
+                    if (My_ConPar.Machine.MachineType != 0)
+                        return;
                     // 其他参数已保存，写入PLC配置区
                     My_ConPar.Object.CurrentPLC.WriteConParToPLC();
                 }
@@ -1496,6 +1585,8 @@ namespace SmartColor.My_Form.Main
             {
                 if (dlg.ShowDialog(this) == DialogResult.OK)
                 {
+                    if (My_ConPar.Machine.MachineType != 0)
+                        return;
                     // 洗杯参数已保存，写入PLC配置区
                     My_ConPar.Object.CurrentPLC.WriteConParToPLC();
                 }
@@ -1514,6 +1605,22 @@ namespace SmartColor.My_Form.Main
             }
             // 强制杀死当前进程（包括所有线程）
             System.Diagnostics.Process.GetCurrentProcess().Kill();
+        }
+
+        private void MiSpectrometer_Click(object sender, EventArgs e)
+        {
+            if (My_ConPar.Machine.Spectrometer == 0)
+            {
+                My_File.LocalTranslator.ShowMessage("未启用分光仪，请先在机台配置中开启分光仪配置！", "温馨提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            var path = Path.Combine(Environment.CurrentDirectory, "Config", "Spectrometer.ini");
+            SmartColor.My_File.ConfigHelper.CheckAndAssignOrPrompt(
+                this, path, typeof(My_ConPar.Spectrometer.Desktop),
+                () => new SmartColor.My_Form.ConPar.ConParShow("分光仪参数", "Spectrometer.ini", typeof(My_ConPar.Spectrometer.Desktop), true),
+                null,
+                true
+            );
         }
     }
 }

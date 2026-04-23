@@ -2104,8 +2104,8 @@ namespace SmartColor.My_AutomaticModule
                     {
                         area.OnCupDataReceived(cupNo);
                     }
-                    // CupFinished?.Invoke(cupNo);
-                    My_Tool.CupAuxiliary.UpdateWaitList(cupNo);
+                    
+                    My_Tool.CupAuxiliary.UpdateWaitList(cupNo, true);
                 }
                 else if (type == 3) // 染固色
                 {

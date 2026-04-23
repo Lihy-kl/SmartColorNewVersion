@@ -2,6 +2,7 @@
 using SmartColor.My_Tool;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -68,7 +69,7 @@ namespace SmartColor.My_RobotManager
                     });
                 if (exists)
                 {
-                    Logger.Error($"{task.TaskName}任务已存在，忽略重复任务");
+                   // Logger.Error($"{task.TaskName}任务已存在，忽略重复任务");
                     return task.CompletionSource.Task;
                 }
 
@@ -114,10 +115,10 @@ namespace SmartColor.My_RobotManager
                         _taskQueue.RemoveAt(0);
                         _currentTask = taskObj;
 
-                        _ = RunTableMan.InsertAsync(new Dictionary<string, object>
-                        {
-                            [SmartColor.My_DataBase.RUN_TABLE.Machine] = $"[RobotTaskManager] 取出任务: {GetTaskInfo(taskObj)}，当前线程ID: {Thread.CurrentThread.ManagedThreadId}"
-                        }, DateTime.Now);
+                        //_ = RunTableMan.InsertAsync(new Dictionary<string, object>
+                        //{
+                        //    [SmartColor.My_DataBase.RUN_TABLE.Machine] = $"[RobotTaskManager] 取出任务: {GetTaskInfo(taskObj)}，当前线程ID: {Thread.CurrentThread.ManagedThreadId}"
+                        //}, DateTime.Now);
                     }
                 }
                 TaskQueueChanged?.Invoke();
@@ -138,7 +139,7 @@ namespace SmartColor.My_RobotManager
                     {
                         try
                         {
-                           
+
                             //_ = RunTableMan.InsertAsync(new Dictionary<string, object>
                             //{
                             //    [SmartColor.My_DataBase.RUN_TABLE.Machine] = $"[RobotTaskManager] 预处理任务: {GetTaskInfo(nextTaskObj)}"
@@ -201,7 +202,7 @@ namespace SmartColor.My_RobotManager
 
                 lock (_lock)
                 {
-                   
+
                     //_ = RunTableMan.InsertAsync(new Dictionary<string, object>
                     //{
                     //    [SmartColor.My_DataBase.RUN_TABLE.Machine] = $"任务清理: {GetTaskInfo(taskObj)}"
@@ -254,6 +255,8 @@ namespace SmartColor.My_RobotManager
             TaskQueueChanged?.Invoke();
         }
 
+       
+
         public void ResetToPriorityOrder()
         {
             lock (_lock)
@@ -274,6 +277,10 @@ namespace SmartColor.My_RobotManager
             {
                 if (_taskQueue.Contains(taskObj))
                 {
+                    _ = RunTableMan.InsertAsync(new Dictionary<string, object>
+                    {
+                        [SmartColor.My_DataBase.RUN_TABLE.Machine] = $"取消任务: {GetTaskInfo(taskObj)}"
+                    }, DateTime.Now);
                     _taskQueue.Remove(taskObj);
                     if (taskObj is IRobotBusinessTask dt)
                     {
