@@ -150,7 +150,7 @@ namespace SmartColor.My_Control
         //是否只读
         private bool _isReadOnly = false;
 
-
+        private bool _isFillData = false;
 
         private int _myID = -1;
 
@@ -162,6 +162,7 @@ namespace SmartColor.My_Control
         {
             public DataTable DT;
             public int ID;
+            public bool IsShowData;
 
         }
 
@@ -882,6 +883,7 @@ namespace SmartColor.My_Control
                 Logger.Info("FillControlsFromDataTable: 数据表为空。");
                 return;
             }
+            this._isFillData = true;
             FillNoteControlsFromDataRow(dt.Rows[0]);
             _myID = -1;
             this.Source = i;
@@ -921,7 +923,7 @@ namespace SmartColor.My_Control
                                     DyeInfo dyeInfo = new DyeInfo
                                     {
                                         DT = new DataTable(),
-
+                                        IsShowData = true
                                     };
                                     DyeingCodeChanged?.Invoke(this, dyeInfo);
                                 }
@@ -935,6 +937,7 @@ namespace SmartColor.My_Control
                 }
             }
             Logger.Info("FillControlsFromDataTable: 控件数据已填充。");
+            this._isFillData = false;
             //txt_FormulaCode.ReadOnly = true;
         }
 
@@ -1137,7 +1140,7 @@ namespace SmartColor.My_Control
             {
                 DT = detail,
                 ID = this._myID,
-
+                IsShowData = this._isFillData
             };
 
             DyeingCodeChanged?.Invoke(this, detailInfo);

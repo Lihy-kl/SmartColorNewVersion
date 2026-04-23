@@ -603,7 +603,7 @@ namespace SmartColor.My_Control
                     (double bathRatio, double clothWeight, double totalWeight) = GetHeadValues();
                     double BathRatio = bathRatio;
                     DataTable data = null;
-                    if (!string.IsNullOrEmpty(versionNum))
+                    if (!string.IsNullOrEmpty(versionNum)&&dyeInfo.IsShowData)
                     {
 
                         var headRows = SqlServer.Select(My_DataBase.FORMULA_HEAD.TableName,
@@ -611,26 +611,24 @@ namespace SmartColor.My_Control
                             $"{My_DataBase.FORMULA_HEAD.VersionNum} = '{versionNum.Replace("'", "''")}'");
                         if (headRows != null && headRows.Rows.Count > 0)
                         {
-                            var dyeCode = headRows.Rows[0][My_DataBase.FORMULA_HEAD.DyeingCode].ToString();
-                            if (dyeCode == code)
+
+
+                            string handleBRList = headRows.Rows[0][
+                                My_DataBase.FORMULA_HEAD.HandleBRList].ToString();
+                            if (!string.IsNullOrEmpty(handleBRList))
                             {
-
-                                string handleBRList = headRows.Rows[0][
-                                    My_DataBase.FORMULA_HEAD.HandleBRList].ToString();
-                                if (!string.IsNullOrEmpty(handleBRList))
-                                {
-                                    string[] strings = handleBRList.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                                    if (strings != null && strings.Length > i)
-                                        BathRatio = Convert.ToDouble(strings[i]);
-                                }
-
-                                var detailRows = SqlServer.Select(My_DataBase.FORMULA_HANDLE_DETAILS.TableName,
-                                    null,
-                                    $"{My_DataBase.FORMULA_HANDLE_DETAILS.FormulaCode} = '{formulaCode.Replace("'", "''")}' AND {My_DataBase.FORMULA_HANDLE_DETAILS.VersionNum} = '{versionNum.Replace("'", "''")}' AND {My_DataBase.FORMULA_HANDLE_DETAILS.No} = {no}",
-                                    My_DataBase.FORMULA_HANDLE_DETAILS.TechnologyName,
-                                    true);
-                                data = detailRows;
+                                string[] strings = handleBRList.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                                if (strings != null && strings.Length > i)
+                                    BathRatio = Convert.ToDouble(strings[i]);
                             }
+
+                            var detailRows = SqlServer.Select(My_DataBase.FORMULA_HANDLE_DETAILS.TableName,
+                                null,
+                                $"{My_DataBase.FORMULA_HANDLE_DETAILS.FormulaCode} = '{formulaCode.Replace("'", "''")}' AND {My_DataBase.FORMULA_HANDLE_DETAILS.VersionNum} = '{versionNum.Replace("'", "''")}' AND {My_DataBase.FORMULA_HANDLE_DETAILS.No} = {no}",
+                                My_DataBase.FORMULA_HANDLE_DETAILS.TechnologyName,
+                                true);
+                            data = detailRows;
+
                         }
                         else
                         {
@@ -639,31 +637,30 @@ namespace SmartColor.My_Control
                                 $"{My_DataBase.FORMULA_HEAD_TEMP.FormulaCode} = '{formulaCode.Replace("'", "''")}' AND {My_DataBase.FORMULA_HEAD_TEMP.VersionNum} = '{versionNum.Replace("'", "''")}'");
                             if (headRows != null && headRows.Rows.Count > 0)
                             {
-                                var dyeCode = headRows.Rows[0][My_DataBase.FORMULA_HEAD.DyeingCode].ToString();
-                                if (dyeCode == code)
+
+
+                                string handleBRList = headRows.Rows[0][My_DataBase.FORMULA_HEAD_TEMP.HandleBRList].ToString();
+                                if (!string.IsNullOrEmpty(handleBRList))
                                 {
-                                    string handleBRList = headRows.Rows[0][My_DataBase.FORMULA_HEAD_TEMP.HandleBRList].ToString();
-                                    if (!string.IsNullOrEmpty(handleBRList))
-                                    {
-                                        string[] strings = handleBRList.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                                        if (strings != null && strings.Length > i)
-                                            BathRatio = Convert.ToDouble(strings[i]);
-                                    }
-
-
-                                    var detailRows = SqlServer.Select(My_DataBase.FORMULA_HANDLE_DETAILS.TableName,
-                                     null,
-                                     $"{My_DataBase.FORMULA_HANDLE_DETAILS.FormulaCode} = '{formulaCode.Replace("'", "''")}' AND {My_DataBase.FORMULA_HANDLE_DETAILS.VersionNum} = '{versionNum.Replace("'", "''")}' AND {My_DataBase.FORMULA_HANDLE_DETAILS.No} = {no}",
-                                     My_DataBase.FORMULA_HANDLE_DETAILS.TechnologyName,
-                                     true);
-                                    data = detailRows;
+                                    string[] strings = handleBRList.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                                    if (strings != null && strings.Length > i)
+                                        BathRatio = Convert.ToDouble(strings[i]);
                                 }
+
+
+                                var detailRows = SqlServer.Select(My_DataBase.FORMULA_HANDLE_DETAILS.TableName,
+                                 null,
+                                 $"{My_DataBase.FORMULA_HANDLE_DETAILS.FormulaCode} = '{formulaCode.Replace("'", "''")}' AND {My_DataBase.FORMULA_HANDLE_DETAILS.VersionNum} = '{versionNum.Replace("'", "''")}' AND {My_DataBase.FORMULA_HANDLE_DETAILS.No} = {no}",
+                                 My_DataBase.FORMULA_HANDLE_DETAILS.TechnologyName,
+                                 true);
+                                data = detailRows;
+
 
 
                             }
                         }
                     }
-                    if (data == null)
+                    else
                     {
                         var bat = this._dropHead.GetAllInputValues();
                         if (bat != null)
