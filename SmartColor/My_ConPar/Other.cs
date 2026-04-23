@@ -283,20 +283,5 @@ namespace SmartColor.My_ConPar
         [Description("气缸定位范围|mm")]
 
         public static int CylinderPositioningRange { get; set; } = 15;
-
-        /// <summary>
-        /// 板卡版是否使用实际位置
-        /// </summary>
-        [Description("板块版是否使用实际位置")]
-        public static int ActualPosition { get; set; } = 1;
-
-        /// <summary>
-        /// 抽液时是否先升气缸 0：边升边反推  1：反推完再升气缸
-        /// </summary>
-        [Description("抽液时是否先升气缸| 0：边升边反推  1：反推完再升气缸")]
-        public static int Push { get; set; } = 0;
-
-
-
     }
 }

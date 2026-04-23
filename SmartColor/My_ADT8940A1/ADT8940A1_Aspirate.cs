@@ -190,43 +190,43 @@ namespace SmartColor.My_ADT8940A1
                     int iZRes = CardObject.OA1Axis.Absolute_Z(syringeType, iTotalPulse, 0);
                     if (0 != iZRes)
                         return iZRes;
-                    if (SmartColor.My_ConPar.Other.Push == 1)
-                    {
-                        //先反推完在升气缸
-                        iZRes = CardObject.OA1Axis.Absolute_Z(syringeType, z, 0);
-                        if (0 != iZRes)
-                            return iZRes;
+                    //if (SmartColor.My_ConPar.Other.Push == 1)
+                    //{
+                    //    //先反推完在升气缸
+                    //    iZRes = CardObject.OA1Axis.Absolute_Z(syringeType, z, 0);
+                    //    if (0 != iZRes)
+                    //        return iZRes;
 
-                        int iCRes = -1;
-                        Thread threadC = new Thread(() =>
-                        {
-                            try
-                            {
-                                iCRes = cylinder.CylinderUp(0);
-                            }
-                            catch (Exception ex)
-                            {
-                                if ("气缸上超时" == ex.Message)
-                                    iCRes = -2;
-                                else if ("阻挡气缸收回超时" == ex.Message)
-                                    iCRes = -3;
-                            }
+                    //    int iCRes = -1;
+                    //    Thread threadC = new Thread(() =>
+                    //    {
+                    //        try
+                    //        {
+                    //            iCRes = cylinder.CylinderUp(0);
+                    //        }
+                    //        catch (Exception ex)
+                    //        {
+                    //            if ("气缸上超时" == ex.Message)
+                    //                iCRes = -2;
+                    //            else if ("阻挡气缸收回超时" == ex.Message)
+                    //                iCRes = -3;
+                    //        }
 
-                        });
+                    //    });
 
-                        threadC.Start();
+                    //    threadC.Start();
 
 
-                        threadC.Join();
+                    //    threadC.Join();
 
-                        if (-1 == iCRes)
-                            return -1;
-                        else if (-2 == iCRes)
-                            throw new Exception("气缸上超时");
-                        else if (-3 == iCRes)
-                            throw new Exception("阻挡气缸收回超时");
-                    }
-                    else
+                    //    if (-1 == iCRes)
+                    //        return -1;
+                    //    else if (-2 == iCRes)
+                    //        throw new Exception("气缸上超时");
+                    //    else if (-3 == iCRes)
+                    //        throw new Exception("阻挡气缸收回超时");
+                    //}
+                    //else
                     {
                         int iCRes = -1;
                         Thread threadC = new Thread(() =>

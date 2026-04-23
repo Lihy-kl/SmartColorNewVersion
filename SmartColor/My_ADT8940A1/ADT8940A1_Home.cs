@@ -119,7 +119,7 @@ namespace SmartColor.My_ADT8940A1
 
                     if (-1 == tongs.Tongs_Off())
                         return -1;
-                    if (SmartColor.My_ConPar.Other.ActualPosition == 1)
+                    //if (SmartColor.My_ConPar.Other.ActualPosition == 1)
                     {
                         Lib_Card.ADT8940A1.OutPut.X_Power.X_Power x_Power = new Lib_Card.ADT8940A1.OutPut.X_Power.X_Power_Condition();
                         if (-1 == x_Power.X_Power_Off())

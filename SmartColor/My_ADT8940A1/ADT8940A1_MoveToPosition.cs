@@ -79,10 +79,10 @@ namespace SmartColor.My_ADT8940A1
                         if (-1 == tray.Tray_Off())
                             return -1;
 
-                        if (SmartColor.My_ConPar.Other.ActualPosition == 0)
-                        {
-                            Home.Home_XYZFinish = false;
-                        }
+                        //if (SmartColor.My_ConPar.Other.ActualPosition == 0)
+                        //{
+                        //    Home.Home_XYZFinish = false;
+                        //}
                     }
                 }
                 catch (Exception ex) 

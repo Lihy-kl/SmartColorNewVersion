@@ -102,7 +102,7 @@ namespace Lib_Card.ADT8940A1.Axis
                 HSpeed = (SmartColor.My_ConPar.Object.CurrentMotion as SmartColor.My_ConPar.Type.BoaedCard.Motion).Move_X_HSpeed,
                 Time = (SmartColor.My_ConPar.Object.CurrentMotion as SmartColor.My_ConPar.Type.BoaedCard.Motion).Move_X_USpeed
             };
-            if (SmartColor.My_ConPar.Other.ActualPosition == 1)
+            //if (SmartColor.My_ConPar.Other.ActualPosition == 1)
             {
                 int iResPos = 0;
 
@@ -162,7 +162,7 @@ namespace Lib_Card.ADT8940A1.Axis
                         return -1;
                     throw new Exception("X轴反限位已通");
                 }
-                if (SmartColor.My_ConPar.Other.ActualPosition == 1)
+                //if (SmartColor.My_ConPar.Other.ActualPosition == 1)
                 {
                     int iXReady = CardObject.OA1Input.InPutStatus(boaed.InPut_X_Ready);
                     if (-1 == iXReady)
@@ -481,7 +481,7 @@ namespace Lib_Card.ADT8940A1.Axis
                 HSpeed = (SmartColor.My_ConPar.Object.CurrentMotion as SmartColor.My_ConPar.Type.BoaedCard.Motion).Move_Y_HSpeed,
                 Time = (SmartColor.My_ConPar.Object.CurrentMotion as SmartColor.My_ConPar.Type.BoaedCard.Motion).Move_Y_USpeed
             };
-            if (SmartColor.My_ConPar.Other.ActualPosition == 1)
+            //if (SmartColor.My_ConPar.Other.ActualPosition == 1)
             {
                 int iResPos = 0;
                 if (-1 == CardObject.OA1.ReadAxisActualPosition(boaed.Axis_Y, ref iResPos))
@@ -548,7 +548,7 @@ namespace Lib_Card.ADT8940A1.Axis
                         return -1;
                     throw new Exception("Y轴反限位已通");
                 }
-                if (SmartColor.My_ConPar.Other.ActualPosition == 1)
+                //if (SmartColor.My_ConPar.Other.ActualPosition == 1)
                 {
                     int iYReady = CardObject.OA1Input.InPutStatus(boaed.InPut_Y_Ready);
                     if (-1 == iYReady)
@@ -1055,7 +1055,7 @@ namespace Lib_Card.ADT8940A1.Axis
                         return -1;
                     throw new Exception("X轴正限位已通");
                 }
-                if (SmartColor.My_ConPar.Other.ActualPosition == 1)
+                //if (SmartColor.My_ConPar.Other.ActualPosition == 1)
                 {
                     int iXReady = CardObject.OA1Input.InPutStatus(boaed.InPut_X_Ready);
                     if (-1 == iXReady)
@@ -1340,7 +1340,7 @@ namespace Lib_Card.ADT8940A1.Axis
                         return -1;
                     throw new Exception("Y轴正限位已通");
                 }
-                if (SmartColor.My_ConPar.Other.ActualPosition == 1)
+                //if (SmartColor.My_ConPar.Other.ActualPosition == 1)
                 {
                     int iYReady = CardObject.OA1Input.InPutStatus(boaed.InPut_Y_Ready);
                     if (-1 == iYReady)
@@ -1752,7 +1752,7 @@ namespace Lib_Card.ADT8940A1.Axis
                         throw new Exception("X轴反限位已通");
                     }
                 }
-                if (SmartColor.My_ConPar.Other.ActualPosition == 1)
+                //if (SmartColor.My_ConPar.Other.ActualPosition == 1)
                 {
                     int iXReady = CardObject.OA1Input.InPutStatus(boaed.InPut_X_Ready);
                     if (-1 == iXReady)
@@ -2041,7 +2041,7 @@ namespace Lib_Card.ADT8940A1.Axis
                         throw new Exception("Y轴反限位已通");
                     }
                 }
-                if (SmartColor.My_ConPar.Other.ActualPosition == 1)
+                //if (SmartColor.My_ConPar.Other.ActualPosition == 1)
                 {
                     int iYReady = CardObject.OA1Input.InPutStatus(boaed.InPut_Y_Ready);
                     if (-1 == iYReady)
