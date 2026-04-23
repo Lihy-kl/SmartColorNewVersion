@@ -33,7 +33,7 @@ namespace SmartColor.My_ADT8940A1
                             HSpeed = hSpeed,
                             Time = upSpeed
                         };
-                        if (-1 == Lib_Card.CardObject.OA1Axis.Relative_X(SmartColor.My_ConPar.Hardware.CylinderType, s_MoveArg, 0))
+                        if (-1 == Lib_Card.CardObject.OA1Axis.Relative_X(1, s_MoveArg, 0))
                             throw new Exception("驱动异常");
                     }
                     else if (axis == 1)
@@ -45,7 +45,7 @@ namespace SmartColor.My_ADT8940A1
                             HSpeed = hSpeed,
                             Time = upSpeed
                         };
-                        if (-1 == Lib_Card.CardObject.OA1Axis.Relative_Y(SmartColor.My_ConPar.Hardware.CylinderType, s_MoveArg, 0))
+                        if (-1 == Lib_Card.CardObject.OA1Axis.Relative_Y(1, s_MoveArg, 0))
                             throw new Exception("驱动异常");
                     }
                     else if (axis == 2)

@@ -26,7 +26,7 @@ namespace SmartColor.My_ADT8940A1
                 {
                     //if (dispenseHeight == 0)
                     {
-                        if (0 == SmartColor.My_ConPar.Hardware.CylinderType)
+                        if (0 == 1)
                         {
                             Lib_Card.ADT8940A1.OutPut.Cylinder.Cylinder cylinder = new Lib_Card.ADT8940A1.OutPut.Cylinder.SingleControl.Cylinder_Condition();
                             if (-1 == cylinder.CylinderUp(0))
@@ -47,7 +47,7 @@ namespace SmartColor.My_ADT8940A1
                     //{
                     //    //气缸慢速下
                     //    CylinderMo cylinderMo = new CylinderMo();
-                    //    if (-1 == cylinderMo.CylinderSlow(SmartColor.My_ConPar.Hardware.CylinderType, 7))
+                    //    if (-1 == cylinderMo.CylinderSlow(1, 7))
                     //        return -1;
                     //}
                     Lib_Card.ADT8940A1.OutPut.Tray.Tray tray = new Lib_Card.ADT8940A1.OutPut.Tray.Tray_Condition();
@@ -66,7 +66,7 @@ namespace SmartColor.My_ADT8940A1
                     Thread.Sleep(500);
 
                     //把气缸升上去，再伸接液盘
-                    if (0 == SmartColor.My_ConPar.Hardware.CylinderType)
+                    if (0 == 1)
                     {
                         Lib_Card.ADT8940A1.OutPut.Cylinder.Cylinder cylinder = new Lib_Card.ADT8940A1.OutPut.Cylinder.SingleControl.Cylinder_Condition();
                         if (-1 == cylinder.CylinderUp(0))

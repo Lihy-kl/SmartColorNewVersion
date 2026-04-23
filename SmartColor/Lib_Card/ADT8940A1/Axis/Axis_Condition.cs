@@ -323,26 +323,27 @@ namespace Lib_Card.ADT8940A1.Axis
                 //    }
 
                 //}
-                if (SmartColor.My_ConPar.Hardware.Machine_Decompression == 1)
-                {
-                    int iDecompression = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Up));
-                    if (-1 == iDecompression)
-                        return -1;
-                    int iDecompressionDown = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Down));
-                    if (-1 == iDecompressionDown)
-                        return -1;
-                    if (0 == iDecompression || 1 == iDecompressionDown)
-                    {
-                        if (-1 == CardObject.OA1.DecStop(boaed.Axis_X))
-                            return -1;
 
-                        OutPut.Decompression.Decompression decompression = new OutPut.Decompression.Decompression_Condition();
-                        if (-1 == decompression.Decompression_Up())
-                            return -1;
+                //if (SmartColor.My_ConPar.Hardware.Machine_Decompression == 1)
+                //{
+                //    int iDecompression = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Up));
+                //    if (-1 == iDecompression)
+                //        return -1;
+                //    int iDecompressionDown = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Down));
+                //    if (-1 == iDecompressionDown)
+                //        return -1;
+                //    if (0 == iDecompression || 1 == iDecompressionDown)
+                //    {
+                //        if (-1 == CardObject.OA1.DecStop(boaed.Axis_X))
+                //            return -1;
 
-                        continue;
-                    }
-                }
+                //        OutPut.Decompression.Decompression decompression = new OutPut.Decompression.Decompression_Condition();
+                //        if (-1 == decompression.Decompression_Up())
+                //            return -1;
+
+                //        continue;
+                //    }
+                //}
 
                 //if (SmartColor.My_ConPar.Hardware.Machine_Decompression == 2)
                 //{
@@ -752,25 +753,26 @@ namespace Lib_Card.ADT8940A1.Axis
                 //    }
 
                 //}
-                if (SmartColor.My_ConPar.Hardware.Machine_Decompression == 1)
-                {
-                    int iDecompression = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Up));
-                    if (-1 == iDecompression)
-                        return -1;
-                    int iDecompressionDown = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Down));
-                    if (-1 == iDecompressionDown)
-                        return -1;
-                    if (0 == iDecompression || 1 == iDecompressionDown)
-                    {
-                        if (-1 == CardObject.OA1.DecStop(boaed.Axis_Y))
-                            return -1;
 
-                        OutPut.Decompression.Decompression decompression = new OutPut.Decompression.Decompression_Condition();
-                        if (-1 == decompression.Decompression_Up())
-                            return -1;
-                        continue;
-                    }
-                }
+                //if (SmartColor.My_ConPar.Hardware.Machine_Decompression == 1)
+                //{
+                //    int iDecompression = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Up));
+                //    if (-1 == iDecompression)
+                //        return -1;
+                //    int iDecompressionDown = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Down));
+                //    if (-1 == iDecompressionDown)
+                //        return -1;
+                //    if (0 == iDecompression || 1 == iDecompressionDown)
+                //    {
+                //        if (-1 == CardObject.OA1.DecStop(boaed.Axis_Y))
+                //            return -1;
+
+                //        OutPut.Decompression.Decompression decompression = new OutPut.Decompression.Decompression_Condition();
+                //        if (-1 == decompression.Decompression_Up())
+                //            return -1;
+                //        continue;
+                //    }
+                //}
 
                 //if (SmartColor.My_ConPar.Hardware.Machine_Decompression == 2)
                 //{
@@ -1190,27 +1192,28 @@ namespace Lib_Card.ADT8940A1.Axis
                 //    }
 
                 //}
-                if (SmartColor.My_ConPar.Hardware.Machine_Decompression == 1)
-                {
-                    int iDecompression = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Up));
-                    if (-1 == iDecompression)
-                        return -1;
-                    int iDecompressionDown = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Down));
-                    if (-1 == iDecompressionDown)
-                        return -1;
 
-                    if (0 == iDecompression || 1 == iDecompressionDown)
-                    {
-                        if (-1 == CardObject.OA1.DecStop(boaed.Axis_X))
-                            return -1;
+                //if (SmartColor.My_ConPar.Hardware.Machine_Decompression == 1)
+                //{
+                //    int iDecompression = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Up));
+                //    if (-1 == iDecompression)
+                //        return -1;
+                //    int iDecompressionDown = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Down));
+                //    if (-1 == iDecompressionDown)
+                //        return -1;
 
-                        OutPut.Decompression.Decompression decompression = new OutPut.Decompression.Decompression_Condition();
-                        if (-1 == decompression.Decompression_Up())
-                            return -1;
+                //    if (0 == iDecompression || 1 == iDecompressionDown)
+                //    {
+                //        if (-1 == CardObject.OA1.DecStop(boaed.Axis_X))
+                //            return -1;
 
-                        continue;
-                    }
-                }
+                //        OutPut.Decompression.Decompression decompression = new OutPut.Decompression.Decompression_Condition();
+                //        if (-1 == decompression.Decompression_Up())
+                //            return -1;
+
+                //        continue;
+                //    }
+                //}
 
                 //if (SmartColor.My_ConPar.Hardware.Machine_Decompression == 2)
                 //{
@@ -1475,26 +1478,26 @@ namespace Lib_Card.ADT8940A1.Axis
                 //    }
 
                 //}
-                if (SmartColor.My_ConPar.Hardware.Machine_Decompression == 1)
-                {
-                    int iDecompression = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Up));
-                    if (-1 == iDecompression)
-                        return -1;
-                    int iDecompressionDown = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Down));
-                    if (-1 == iDecompressionDown)
-                        return -1;
-                    if (0 == iDecompression || 1 == iDecompressionDown)
-                    {
-                        if (-1 == CardObject.OA1.DecStop(boaed.Axis_Y))
-                            return -1;
+                //if (SmartColor.My_ConPar.Hardware.Machine_Decompression == 1)
+                //{
+                //    int iDecompression = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Up));
+                //    if (-1 == iDecompression)
+                //        return -1;
+                //    int iDecompressionDown = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Down));
+                //    if (-1 == iDecompressionDown)
+                //        return -1;
+                //    if (0 == iDecompression || 1 == iDecompressionDown)
+                //    {
+                //        if (-1 == CardObject.OA1.DecStop(boaed.Axis_Y))
+                //            return -1;
 
-                        OutPut.Decompression.Decompression decompression = new OutPut.Decompression.Decompression_Condition();
-                        if (-1 == decompression.Decompression_Up())
-                            return -1;
+                //        OutPut.Decompression.Decompression decompression = new OutPut.Decompression.Decompression_Condition();
+                //        if (-1 == decompression.Decompression_Up())
+                //            return -1;
 
-                        continue;
-                    }
-                }
+                //        continue;
+                //    }
+                //}
 
                 //if (SmartColor.My_ConPar.Hardware.Machine_Decompression == 2)
                 //{
@@ -1887,26 +1890,27 @@ namespace Lib_Card.ADT8940A1.Axis
                 //    }
 
                 //}
-                if (SmartColor.My_ConPar.Hardware.Machine_Decompression == 1)
-                {
-                    int iDecompression = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Up));
-                    if (-1 == iDecompression)
-                        return -1;
-                    int iDecompressionDown = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Down));
-                    if (-1 == iDecompressionDown)
-                        return -1;
 
-                    if (0 == iDecompression || 1 == iDecompressionDown)
-                    {
-                        if (-1 == CardObject.OA1.DecStop(boaed.Axis_X))
-                            return -1;
+                //if (SmartColor.My_ConPar.Hardware.Machine_Decompression == 1)
+                //{
+                //    int iDecompression = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Up));
+                //    if (-1 == iDecompression)
+                //        return -1;
+                //    int iDecompressionDown = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Down));
+                //    if (-1 == iDecompressionDown)
+                //        return -1;
 
-                        OutPut.Decompression.Decompression decompression = new OutPut.Decompression.Decompression_Condition();
-                        if (-1 == decompression.Decompression_Up())
-                            return -1;
-                        continue;
-                    }
-                }
+                //    if (0 == iDecompression || 1 == iDecompressionDown)
+                //    {
+                //        if (-1 == CardObject.OA1.DecStop(boaed.Axis_X))
+                //            return -1;
+
+                //        OutPut.Decompression.Decompression decompression = new OutPut.Decompression.Decompression_Condition();
+                //        if (-1 == decompression.Decompression_Up())
+                //            return -1;
+                //        continue;
+                //    }
+                //}
 
                 //if (SmartColor.My_ConPar.Hardware.Machine_Decompression == 2)
                 //{
@@ -2173,26 +2177,26 @@ namespace Lib_Card.ADT8940A1.Axis
                 //    }
 
                 //}
-                if (SmartColor.My_ConPar.Hardware.Machine_Decompression == 1)
-                {
-                    int iDecompression = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Up));
-                    if (-1 == iDecompression)
-                        return -1;
-                    int iDecompressionDown = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Down));
-                    if (-1 == iDecompressionDown)
-                        return -1;
+                //if (SmartColor.My_ConPar.Hardware.Machine_Decompression == 1)
+                //{
+                //    int iDecompression = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Up));
+                //    if (-1 == iDecompression)
+                //        return -1;
+                //    int iDecompressionDown = CardObject.OA1Input.InPutStatus(Convert.ToInt32(boaed.InPut_Decompression_Down));
+                //    if (-1 == iDecompressionDown)
+                //        return -1;
 
-                    if (0 == iDecompression || 1 == iDecompressionDown)
-                    {
-                        if (-1 == CardObject.OA1.DecStop(boaed.Axis_X))
-                            return -1;
+                //    if (0 == iDecompression || 1 == iDecompressionDown)
+                //    {
+                //        if (-1 == CardObject.OA1.DecStop(boaed.Axis_X))
+                //            return -1;
 
-                        OutPut.Decompression.Decompression decompression = new OutPut.Decompression.Decompression_Condition();
-                        if (-1 == decompression.Decompression_Up())
-                            return -1;
-                        continue;
-                    }
-                }
+                //        OutPut.Decompression.Decompression decompression = new OutPut.Decompression.Decompression_Condition();
+                //        if (-1 == decompression.Decompression_Up())
+                //            return -1;
+                //        continue;
+                //    }
+                //}
                 //if (SmartColor.My_ConPar.Hardware.Machine_Decompression == 2)
                 //{
 

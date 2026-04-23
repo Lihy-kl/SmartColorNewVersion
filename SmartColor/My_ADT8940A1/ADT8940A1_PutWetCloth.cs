@@ -33,7 +33,7 @@ namespace SmartColor.My_ADT8940A1
 
                     CylinderMo cylinderMo = new CylinderMo();
                     //气缸到阻挡位
-                    if (-1 == cylinderMo.CylinderBlock(SmartColor.My_ConPar.Hardware.CylinderType))
+                    if (-1 == cylinderMo.CylinderBlock(1))
                         return -1;
 
                     //开始放布
@@ -60,7 +60,7 @@ namespace SmartColor.My_ADT8940A1
 
                     //气缸上
                     Lib_Card.ADT8940A1.OutPut.Cylinder.Cylinder cylinder;
-                    if (0 == SmartColor.My_ConPar.Hardware.CylinderType)
+                    if (0 == 1)
                         cylinder = new Lib_Card.ADT8940A1.OutPut.Cylinder.SingleControl.Cylinder_Condition();
                     else
                         cylinder = new Lib_Card.ADT8940A1.OutPut.Cylinder.DualControl.Cylinder_Condition();

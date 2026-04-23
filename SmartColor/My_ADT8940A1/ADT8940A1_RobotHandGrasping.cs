@@ -27,7 +27,7 @@ namespace SmartColor.My_ADT8940A1
                 try
                 {
                     Lib_Card.ADT8940A1.Module.GetOrPutClamp getOrPutClamp = new Lib_Card.ADT8940A1.Module.GetOrPutClamp();
-                    getOrPutClamp.GetClamp(SmartColor.My_ConPar.Hardware.CylinderType);
+                    getOrPutClamp.GetClamp(1);
                 }
                 catch (Exception ex)
                 {

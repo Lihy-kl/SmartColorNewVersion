@@ -45,7 +45,7 @@ namespace Lib_Card.ADT8940A1.OutPut.Tray
                 {
                     //气缸上
                     OutPut.Cylinder.Cylinder cylinder;
-                    if (0 == SmartColor.My_ConPar.Hardware.CylinderType)
+                    if (0 == 1)
                         cylinder = new OutPut.Cylinder.SingleControl.Cylinder_Condition();
                     else
                         cylinder = new OutPut.Cylinder.DualControl.Cylinder_Condition();
@@ -444,7 +444,7 @@ namespace Lib_Card.ADT8940A1.OutPut.Tray
                 {
                     //气缸上
                     OutPut.Cylinder.Cylinder cylinder;
-                    if (0 == SmartColor.My_ConPar.Hardware.CylinderType)
+                    if (0 == 1)
                         cylinder = new OutPut.Cylinder.SingleControl.Cylinder_Condition();
                     else
                         cylinder = new OutPut.Cylinder.DualControl.Cylinder_Condition();

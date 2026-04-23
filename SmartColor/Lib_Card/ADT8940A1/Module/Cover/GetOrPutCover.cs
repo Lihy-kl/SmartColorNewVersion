@@ -254,7 +254,7 @@ namespace Lib_Card.ADT8940A1.Module
                         return -1;
                     //移动到撑盖位置
                     Lib_Card.ADT8940A1.Module.Move.Move move = new Lib_Card.ADT8940A1.Module.Move.TargeMove();
-                    int iMove = move.TargetMove(SmartColor.My_ConPar.Hardware.CylinderType, 0, x, y, 0);
+                    int iMove = move.TargetMove(1, 0, x, y, 0);
                     if (-1 == iMove)
                         throw new Exception("驱动异常");
                     //关闭抓手，气缸下，判断是否到位

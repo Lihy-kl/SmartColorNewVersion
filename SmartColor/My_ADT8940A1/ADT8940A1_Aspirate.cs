@@ -35,7 +35,7 @@ namespace SmartColor.My_ADT8940A1
                         return -1;
 
                     Lib_Card.ADT8940A1.OutPut.Cylinder.Cylinder cylinder;
-                    if (0 == SmartColor.My_ConPar.Hardware.CylinderType)
+                    if (0 == 1)
                         cylinder = new Lib_Card.ADT8940A1.OutPut.Cylinder.SingleControl.Cylinder_Condition();
                     else
                         cylinder = new Lib_Card.ADT8940A1.OutPut.Cylinder.DualControl.Cylinder_Condition();
@@ -147,7 +147,7 @@ namespace SmartColor.My_ADT8940A1
                                 return -1;
 
                             Lib_Card.ADT8940A1.Module.Home.Home home = new Lib_Card.ADT8940A1.Module.Home.Home_Condition();
-                            if (-1 == home.Home_Z(SmartColor.My_ConPar.Hardware.CylinderType))
+                            if (-1 == home.Home_Z(1))
                                 throw new Exception("驱动异常");
                             //当没发现针筒时，先打搅拌打开，继续搅拌
                             if (-1 == blender.Blender_Off())

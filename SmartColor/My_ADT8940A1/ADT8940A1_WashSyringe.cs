@@ -22,7 +22,7 @@ namespace SmartColor.My_ADT8940A1
                 try
                 {
                     Lib_Card.ADT8940A1.Module.WashSyringe washSyringe = new Lib_Card.ADT8940A1.Module.WashSyringe();
-                    washSyringe.Wash(SmartColor.My_ConPar.Hardware.CylinderType, syringeType);
+                    washSyringe.Wash(1, syringeType);
                 }
                 catch (Exception ex)
                 {

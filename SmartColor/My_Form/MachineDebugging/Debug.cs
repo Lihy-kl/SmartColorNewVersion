@@ -780,7 +780,7 @@ namespace SmartColor.My_Form.MachineDebugging
                             if (sName == "OutPut_Cylinder_Up")
                             {
                                 Lib_Card.ADT8940A1.OutPut.Cylinder.Cylinder cylinder;
-                                if (0 == SmartColor.My_ConPar.Hardware.CylinderType)
+                                if (0 == 1)
                                     cylinder = new Lib_Card.ADT8940A1.OutPut.Cylinder.SingleControl.Cylinder_Condition();
                                 else
                                     cylinder = new Lib_Card.ADT8940A1.OutPut.Cylinder.DualControl.Cylinder_Condition();
@@ -802,12 +802,12 @@ namespace SmartColor.My_Form.MachineDebugging
                             else if (sName == "OutPut_Slow")
                             {
                                 CylinderMo cylinderMo = new CylinderMo();
-                                cylinderMo.CylinderSlow(SmartColor.My_ConPar.Hardware.CylinderType, 7);
+                                cylinderMo.CylinderSlow(1, 7);
                             }
                             else if (sName == "OutPut_Block_Cylinder")
                             {
                                 CylinderMo cylinderMo = new CylinderMo();
-                                cylinderMo.CylinderBlock(SmartColor.My_ConPar.Hardware.CylinderType);
+                                cylinderMo.CylinderBlock(1);
                             }
                             else if (sName == "OutPut_ResetX" || sName == "OutPut_ResetY")
                             {

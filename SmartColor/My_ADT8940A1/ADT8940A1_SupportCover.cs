@@ -30,7 +30,7 @@ namespace SmartColor.My_ADT8940A1
                     Lib_Card.ADT8940A1.OutPut.Tray.Tray tray = new Lib_Card.ADT8940A1.OutPut.Tray.Tray_Condition();
 
                     Lib_Card.ADT8940A1.OutPut.Cylinder.Cylinder cylinder;
-                    if (0 == SmartColor.My_ConPar.Hardware.CylinderType)
+                    if (0 == 1)
                         cylinder = new Lib_Card.ADT8940A1.OutPut.Cylinder.SingleControl.Cylinder_Condition();
                     else
                         cylinder = new Lib_Card.ADT8940A1.OutPut.Cylinder.DualControl.Cylinder_Condition();

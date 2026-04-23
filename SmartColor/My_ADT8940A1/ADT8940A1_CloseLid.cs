@@ -47,7 +47,7 @@ namespace SmartColor.My_ADT8940A1
                         return -1;
 
                     Lib_Card.ADT8940A1.OutPut.Cylinder.Cylinder cylinder;
-                    if (0 == SmartColor.My_ConPar.Hardware.CylinderType)
+                    if (0 == 1)
                         cylinder = new Lib_Card.ADT8940A1.OutPut.Cylinder.SingleControl.Cylinder_Condition();
                     else
                         cylinder = new Lib_Card.ADT8940A1.OutPut.Cylinder.DualControl.Cylinder_Condition();
@@ -95,7 +95,7 @@ namespace SmartColor.My_ADT8940A1
                                 return -1;
                             //移动到撑盖位置
                             Lib_Card.ADT8940A1.Module.Move.Move move = new Lib_Card.ADT8940A1.Module.Move.TargeMove();
-                            int iMove = move.TargetMove(SmartColor.My_ConPar.Hardware.CylinderType, 0, x, y, 0);
+                            int iMove = move.TargetMove(1, 0, x, y, 0);
                             if (-1 == iMove)
                                 throw new Exception("驱动异常");
 

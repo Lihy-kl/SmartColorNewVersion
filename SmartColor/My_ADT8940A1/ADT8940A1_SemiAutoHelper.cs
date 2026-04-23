@@ -20,7 +20,7 @@ namespace SmartColor.My_ADT8940A1
         {
             SmartColor.My_ADT8940A1.ADT8940A1_Home aDT8940A1_Home = new ADT8940A1_Home();
             await My_ConPar.Object.CurrentADT8940A1.UpdateStatusAsync("回原点");
-            var result = await aDT8940A1_Home.Home_XYZ(SmartColor.My_ConPar.Hardware.CylinderType);
+            var result = await aDT8940A1_Home.Home_XYZ(1);
             await My_ConPar.Object.CurrentADT8940A1.UpdateStatusAsync(result==2?"待机":"异常");
             return RobotAlarmOverview.HandleSemiAutoResult(result, "回原点");
         }
@@ -49,7 +49,7 @@ namespace SmartColor.My_ADT8940A1
             }
 
             SmartColor.My_ADT8940A1.ADT8940A1_MoveToPosition move = new ADT8940A1_MoveToPosition();
-            return move.MoveToPosition(SmartColor.My_ConPar.Hardware.CylinderType,x, y, isStandby);
+            return move.MoveToPosition(1,x, y, isStandby);
         }
 
         /// <summary>

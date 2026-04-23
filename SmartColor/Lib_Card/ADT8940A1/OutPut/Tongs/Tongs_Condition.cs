@@ -23,13 +23,13 @@ namespace Lib_Card.ADT8940A1.OutPut.Tongs
                 return 0;
             else
             {
-                if (SmartColor.My_ConPar.Hardware.TongType == 0)
-                {
-                    int iRes = CardObject.OA1.WriteOutPut(Convert.ToInt32(boaed.OutPut_TongsOn), 0);
-                    if (-1 == iRes)
-                        return -1;
-                }
-                else
+                //if (SmartColor.My_ConPar.Hardware.TongType == 0)
+                //{
+                //    int iRes = CardObject.OA1.WriteOutPut(Convert.ToInt32(boaed.OutPut_TongsOn), 0);
+                //    if (-1 == iRes)
+                //        return -1;
+                //}
+                //else
                 {
                     int iRes = CardObject.OA1.WriteOutPut(Convert.ToInt32(boaed.OutPut_TongsOn), 0);
                     if (-1 == iRes)
@@ -289,13 +289,13 @@ namespace Lib_Card.ADT8940A1.OutPut.Tongs
                 return 0;
             else
             {
-                if (SmartColor.My_ConPar.Hardware.TongType == 0)
-                {
-                    int iRes = CardObject.OA1.WriteOutPut(Convert.ToInt32(boaed.OutPut_TongsOn), 1);
-                    if (-1 == iRes)
-                        return -1;
-                }
-                else
+                //if (SmartColor.My_ConPar.Hardware.TongType == 0)
+                //{
+                //    int iRes = CardObject.OA1.WriteOutPut(Convert.ToInt32(boaed.OutPut_TongsOn), 1);
+                //    if (-1 == iRes)
+                //        return -1;
+                //}
+                //else
                 {
                     int iRes = CardObject.OA1.WriteOutPut(Convert.ToInt32(boaed.OutPut_TongsOn), 1);
                     if (-1 == iRes)
